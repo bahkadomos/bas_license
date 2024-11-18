@@ -1,5 +1,4 @@
 from http.cookies import SimpleCookie
-from logging import Logger
 from typing import Any, Literal, Protocol, overload
 
 from aiohttp import ClientSession
@@ -9,7 +8,7 @@ from .schemas import HTTPResponse, JSONHTTPResponse, TextHTTPResponse
 
 
 class IHTTPClient(Protocol):
-    def __init__(self, session: ClientSession, logger: Logger) -> None: ...
+    def __init__(self, session: ClientSession) -> None: ...
 
     @overload
     async def request(
