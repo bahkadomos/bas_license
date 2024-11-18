@@ -1,11 +1,9 @@
-from collections.abc import Sequence
 from datetime import datetime
 from http.cookies import CookieError
 
-from lxml import etree
-
 from core.enums import LicenseResultStatus
 from core.schemas import LicenseDetailsSchema
+from core.services.dom import HTMLParser
 from core.services.recaptcha import BaseRecaptchaClient
 from core.utils import (
     CookiesManager,
@@ -58,7 +56,7 @@ class BasAuthClient(BaseBasClient):
         self._captcha_client = captcha_client
         self._username = username
         self._password = password
-        self._parser = etree.HTMLParser()
+        self._parser = HTMLParser()
 
     @property
     def LOGIN_URL(self) -> str:
@@ -68,23 +66,13 @@ class BasAuthClient(BaseBasClient):
     def SUCCESS_URL(self) -> str:
         return self.BASE_URL.format("/personal/license/BASPremium")
 
-    def _get_dom_value(self, html: str, query: str) -> str | None:
-        dom = etree.fromstring(html, self._parser)
-        data = dom.xpath(query)
-        if (
-            isinstance(data, Sequence)
-            and len(data)
-            and isinstance(data[0], str)
-        ):
-            return data[0]
-
     def _get_recaptcha_site_key(self, html: str) -> str | None:
-        return self._get_dom_value(
+        return self._parser.get_by_xpath(
             html, '//div[@class="g-recaptcha"]/@data-sitekey'
         )
 
     def _get_auth_error(self, html: str) -> str | None:
-        return self._get_dom_value(html, '//div[@role="alert"]/text()')
+        return self._parser.get_by_xpath(html, '//div[@role="alert"]/text()')
 
     async def _init_login(self) -> TextHTTPResponse:
         return await self._client.get(
