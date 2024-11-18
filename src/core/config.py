@@ -4,7 +4,7 @@ from typing import Annotated
 from pydantic import Field, computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from core.enums import CaptchaService
+from .enums import CaptchaService
 
 
 class Settings(BaseSettings):
