@@ -1,14 +1,10 @@
 import os
-from enum import Enum
 from typing import Annotated
 
 from pydantic import Field, computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-
-class CaptchaService(Enum):
-    cap_guru = "cap.guru"
-    capmonster = "capmonster.cloud"
+from core.enums import CaptchaService
 
 
 class Settings(BaseSettings):

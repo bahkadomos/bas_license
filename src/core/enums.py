@@ -4,6 +4,11 @@ from typing import Annotated, Literal
 from typing_extensions import Doc
 
 
+class CaptchaService(Enum):
+    cap_guru = "cap.guru"
+    capmonster = "capmonster.cloud"
+
+
 class Location(Enum):
     body = "body"
     path = "path"

@@ -1,7 +1,8 @@
 import asyncio
 from typing import Any
 
-from core.config import CaptchaService, settings
+from core.config import settings
+from core.enums import CaptchaService
 from core.utils import HTTPError, IHTTPClient
 
 from .base import BaseRecaptchaClient

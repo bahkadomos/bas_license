@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import Any
 
-from core.config import CaptchaService, settings
+from core.config import settings
+from core.enums import CaptchaService
 from core.utils import IHTTPClient, exc_wrapper
 
 from .exceptions import RecaptchaError
