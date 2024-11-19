@@ -18,7 +18,7 @@ class LicenseTasksDataModel(Base):
             create_constraint=True,
             validate_strings=True,
         ),
-        default=LicenseResultStatus.pending,
+        server_default=LicenseResultStatus.pending.value,
     )
     expires_in: Mapped[date_time | None]
     is_expired: Mapped[boolean | None]
