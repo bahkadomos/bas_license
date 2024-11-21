@@ -3,6 +3,7 @@ from collections.abc import AsyncGenerator
 
 from fastapi import FastAPI, HTTPException, status
 from fastapi.exceptions import RequestValidationError
+from prometheus_fastapi_instrumentator import Instrumentator
 
 from core.config import settings
 from core.models import (
@@ -16,11 +17,11 @@ from v1.middlewares import EncryptionMiddleware
 from v1.routers import license
 
 
-def create_app() -> FastAPI:
+def create_app(enable_monitoring: bool = True) -> FastAPI:
     @asynccontextmanager
     async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
         app.state.engine = get_sqlalchemy_engine(settings.dsn)
-        app.state.http_session = get_client_session()
+        app.state.http_session = get_client_session(timeout=30)
         await create_sqlalchemy_tables(app.state.engine)
 
         yield
@@ -46,6 +47,12 @@ def create_app() -> FastAPI:
     )
     app.add_middleware(EncryptionMiddleware)
     app.include_router(license.router)
+    if enable_monitoring:
+        Instrumentator(
+            should_instrument_requests_inprogress=True,
+            should_group_status_codes=False,
+            excluded_handlers=["/docs", "/openapi.json", "/metrics"],
+        ).instrument(app).expose(app)
 
     return app
 
