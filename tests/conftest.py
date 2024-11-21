@@ -166,7 +166,7 @@ async def aiohttp_client() -> (
 async def app(dsn: str) -> AsyncGenerator[FastAPI, None]:
     from main import create_app
 
-    app = create_app(enable_monitoring=False)
+    app = create_app()
     app.router.lifespan_context = lifespan
     app.state.engine = get_sqlalchemy_engine(dsn, debug=False)
     await create_sqlalchemy_tables(app.state.engine)

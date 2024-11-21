@@ -1,84 +1,26 @@
 services:
   db:
-    image: postgres:17-alpine
-    restart: unless-stopped
-    ports:
-      - "5432:5432"
-    volumes:
-      - db-data:/var/lib/postgresql/data
-    profiles:
-      - production
-
-  db-dev:
-    image: postgres:17-alpine
-    restart: unless-stopped
+    image: postgres:alpine
+    restart: always
     ports:
       - "5432:5432"
     env_file:
       - .env
     volumes:
-      - db-data-dev:/var/lib/postgresql/data
-    profiles:
-      - dev
-
-  prometheus:
-    image: prom/prometheus:latest
-    restart: unless-stopped
-    ports:
-      - "9090:9090"
-    volumes:
-      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-      - prometheus-data:/prometheus/
-    profiles:
-      - production
-
-  prometheus-dev:
-    image: prom/prometheus:latest
-    restart: unless-stopped
-    ports:
-      - "9090:9090"
-    volumes:
-      - ./monitoring/prometheus/dev-prometheus.yml:/etc/prometheus/prometheus.yml
-      - prometheus-data-dev:/prometheus/
-    profiles:
-      - dev
+      - db_data:/var/lib/postgresql/data
 
   web:
     build: .
-    restart: on-failure
-    ports:
-      - "80:8000"
-    environment:
-      POSTGRES_HOST: "db"
-    command: >
-      sh -c "alembic upgrade head
-      && uvicorn --app-dir ./src main:app --host 0.0.0.0 --port 8000 --reload"
-    depends_on:
-      - db
-      - prometheus
-    profiles:
-      - production
-
-  web-dev:
-    build: .
-    restart: on-failure
     ports:
       - "8000:8000"
     env_file:
       - .env
     environment:
-      POSTGRES_HOST: "db-dev"
-    command: >
-      sh -c "alembic upgrade head
-      && uvicorn --app-dir ./src main:app --host 0.0.0.0 --port 8000 --reload"
+      POSTGRES_HOST: "db"
+      DEBUG: "false"
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --no-access-log
     depends_on:
-      - db-dev
-      - prometheus-dev
-    profiles:
-      - dev
+      - db
 
 volumes:
-  db-data:
-  db-data-dev:
-  prometheus-data:
-  prometheus-data-dev:
+  db_data:
