@@ -4,6 +4,9 @@ version = "0.1.0"
 description = ""
 authors = [""]
 readme = "README.md"
+packages = [
+    { include = "scripts" },
+]
 
 [tool.poetry.dependencies]
 python = "^3.13"
@@ -70,3 +73,6 @@ select = [
     "ISC",  # implicit string concatenation
     "UP",  # alert you when better syntax is available in your python version
 ]
+
+[tool.poetry.scripts]
+keys = "scripts.generate_keys:generate_rsa_keys"
