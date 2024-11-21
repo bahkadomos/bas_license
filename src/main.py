@@ -6,10 +6,7 @@ from fastapi.exceptions import RequestValidationError
 from prometheus_fastapi_instrumentator import Instrumentator
 
 from core.config import settings
-from core.models import (
-    create_sqlalchemy_tables,
-    get_sqlalchemy_engine,
-)
+from core.models import get_sqlalchemy_engine
 from core.schemas import ErrorDetailsSchema, ErrorResponse
 from core.utils import get_client_session
 from v1.handlers import http_exception_handler, request_validation_handler
@@ -22,7 +19,6 @@ def create_app(enable_monitoring: bool = True) -> FastAPI:
     async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
         app.state.engine = get_sqlalchemy_engine(settings.dsn)
         app.state.http_session = get_client_session(timeout=30)
-        await create_sqlalchemy_tables(app.state.engine)
 
         yield
 
