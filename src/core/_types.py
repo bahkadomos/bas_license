@@ -5,5 +5,3 @@ from pydantic import BaseModel
 
 type UUIDv4 = UUID
 type DictOrPydantic = dict[str, Any] | BaseModel
-
-__all__ = ["DictOrPydantic", "UUIDv4"]
