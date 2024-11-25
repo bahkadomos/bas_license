@@ -55,6 +55,7 @@ pythonpath = [
 consider_namespace_packages = "true"
 
 [tool.mypy]
+files = ["./src/main.py"]
 warn_no_return = "false"
 plugins = [
     "pydantic.mypy",
@@ -73,6 +74,3 @@ select = [
     "ISC",  # implicit string concatenation
     "UP",  # alert you when better syntax is available in your python version
 ]
-
-[tool.poetry.scripts]
-keys = "scripts.generate_keys:generate_rsa_keys"
