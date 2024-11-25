@@ -9,7 +9,7 @@ from .schemas import (
     TaskLicenseResultOutSchema,
 )
 from .services.uow import IUnitOfWork
-from .services.workers import BasWorker
+from .services.workers import IBasWorker
 
 
 class ITaskUseCase(Protocol):
@@ -19,7 +19,7 @@ class ITaskUseCase(Protocol):
         self,
         background_tasks: BackgroundTasks,
         user: CreateLicenseTaskInSchema,
-        bas_client: BasWorker,
+        bas_client: IBasWorker,
     ) -> CreateLicenseTaskOutSchema: ...
 
     async def get_task_result(
@@ -35,7 +35,7 @@ class TaskUseCase:
         self,
         background_tasks: BackgroundTasks,
         user: CreateLicenseTaskInSchema,
-        bas_client: BasWorker,
+        bas_client: IBasWorker,
     ) -> CreateLicenseTaskOutSchema:
         async with self._uow as uow:
             user_id = await self._uow.users.create_one(user.username)

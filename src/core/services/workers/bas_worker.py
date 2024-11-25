@@ -1,5 +1,6 @@
 import asyncio
 import traceback
+from typing import Protocol
 
 from core._types import UUIDv4
 from core.config import settings
@@ -13,6 +14,20 @@ from core.services.bas import (
 from core.services.recaptcha import BaseRecaptchaClient, RecaptchaError
 from core.services.uow import IUnitOfWork
 from core.utils import EnvManager, HTTPError, IHTTPClient
+
+
+class IBasWorker(Protocol):
+    def __init__(
+        self,
+        *,
+        uow: IUnitOfWork,
+        http_client: IHTTPClient,
+        captcha_client: BaseRecaptchaClient,
+    ) -> None: ...
+
+    async def __call__(
+        self, task_data_id: UUIDv4, user: str, script: str
+    ) -> None: ...
 
 
 class BasWorker:

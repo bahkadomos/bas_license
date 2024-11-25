@@ -1,3 +1,3 @@
-from .bas_worker import BasWorker
+from .bas_worker import BasWorker, IBasWorker
 
-__all__ = ["BasWorker"]
+__all__ = ["BasWorker", "IBasWorker"]
