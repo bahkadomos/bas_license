@@ -16,11 +16,7 @@ from sqlalchemy.ext.asyncio import (
 )
 
 from core.config import Settings
-from core.models import (
-    create_sqlalchemy_tables,
-    drop_sqlalchemy_tables,
-    get_sqlalchemy_engine,
-)
+from core.models import get_sqlalchemy_engine
 from core.services.bas import BasAPIClient, BasAuthClient
 from core.services.recaptcha import (
     BaseRecaptchaClient,
@@ -32,7 +28,7 @@ from core.utils import EnvManager, RetryAiohttpClient
 from core.utils.http_client.client import SingleRetryClient
 from v1.dependencies import get_bas_worker, get_http_client
 
-from .helpers import App
+from .helpers import App, create_sqlalchemy_tables, drop_sqlalchemy_tables
 
 
 @asynccontextmanager

@@ -1,9 +1,4 @@
-from .database import (
-    create_sqlalchemy_tables,
-    drop_sqlalchemy_tables,
-    get_sqlalchemy_engine,
-    get_sqlalchemy_session_factory,
-)
+from .database import get_sqlalchemy_engine, get_sqlalchemy_session_factory
 from .license_tasks import LicenseTasksModel
 from .license_tasks_data import LicenseTasksDataModel
 from .scripts import ScriptsModel
@@ -16,8 +11,6 @@ __all__ = [
     "ScriptsModel",
     "UsersModel",
     "UsersScriptsModel",
-    "create_sqlalchemy_tables",
-    "drop_sqlalchemy_tables",
     "get_sqlalchemy_engine",
     "get_sqlalchemy_session_factory",
 ]

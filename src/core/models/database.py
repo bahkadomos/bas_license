@@ -23,16 +23,6 @@ def get_sqlalchemy_engine(dsn: str, *, debug: bool = False) -> AsyncEngine:
     )
 
 
-async def create_sqlalchemy_tables(engine: AsyncEngine) -> None:
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-
-
-async def drop_sqlalchemy_tables(engine: AsyncEngine) -> None:
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.drop_all)
-
-
 def get_sqlalchemy_session_factory(
     engine: AsyncEngine,
 ) -> async_sessionmaker[AsyncSession]:
