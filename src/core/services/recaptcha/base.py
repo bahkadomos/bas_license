@@ -15,11 +15,7 @@ class BaseRecaptchaClient(ABC):
         super().__init_subclass__(**kwargs)
         cls.registry[service] = cls
 
-    def __init__(
-        self,
-        *,
-        http_client: IHTTPClient
-    ) -> None:
+    def __init__(self, *, http_client: IHTTPClient) -> None:
         self._client = http_client
         self._attempts = settings.captcha_attempts
         self._delay = settings.captcha_delay
