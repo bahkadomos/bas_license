@@ -1,4 +1,5 @@
 import time
+from typing import Any
 
 from aiohttp import (
     ClientResponse,
@@ -17,10 +18,14 @@ from core.services.metrics import (
 from .constants import HEADERS
 
 
-class InstrumentedClientSession(ClientSession):
-    '''Collect metrics for prometheus client'''
-    async def _request(
-        self, method: str, str_or_url: StrOrURL, **kwargs
+class InstrumentedClientSession:
+    """Collect metrics for prometheus client"""
+
+    def __init__(self, *args: Any, **kwargs: Any):
+        self._session = ClientSession(*args, **kwargs)
+
+    async def request(
+        self, method: str, str_or_url: StrOrURL, **kwargs: Any
     ) -> ClientResponse:
         endpoint = (
             str_or_url
@@ -33,7 +38,9 @@ class InstrumentedClientSession(ClientSession):
         start_time = time.monotonic()
         status_code = 0
         try:
-            response = await super()._request(method, str_or_url, **kwargs)
+            response = await self._session._request(
+                method, str_or_url, **kwargs
+            )
             status_code = response.status
             return response
         except ClientResponseError as e:
@@ -48,8 +55,14 @@ class InstrumentedClientSession(ClientSession):
                 method=method, endpoint=endpoint
             ).observe(elapsed_time)
             OUTGOING_REQUESTS_IN_PROGRESS.labels(
-            method=method, endpoint=endpoint
-        ).dec()
+                method=method, endpoint=endpoint
+            ).dec()
+
+    async def close(self):
+        await self._session.close()
+
+    def __getattr__(self, __name: Any):
+        return getattr(self._session, __name)
 
 
 def get_client_session(timeout: float | None = None) -> ClientSession:
