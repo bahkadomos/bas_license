@@ -7,6 +7,7 @@ from core.models import get_sqlalchemy_session_factory
 from core.services.recaptcha import BaseRecaptchaClient, get_recaptcha_client
 from core.services.uow import IUnitOfWork, UnitOfWork
 from core.services.workers import BasWorker
+from core.use_cases import ITaskUseCase, TaskUseCase
 from core.utils import IHTTPClient, RetryAiohttpClient
 
 
@@ -52,3 +53,10 @@ async def get_bas_worker(
 
 
 BasWorkerDependency = Annotated[BasWorker, Depends(get_bas_worker)]
+
+
+def task_use_case(uow: UOWDependency) -> ITaskUseCase:
+    return TaskUseCase(uow)
+
+
+TaskUseCaseDependency = Annotated[ITaskUseCase, Depends(task_use_case)]
