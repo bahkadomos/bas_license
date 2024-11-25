@@ -6,3 +6,5 @@ test:
 	pytest
 keys:
 	python ./scripts/generate_keys.py
+migrations:
+	alembic upgrade head
