@@ -1,5 +1,5 @@
 import time
-from typing import Any
+from typing import Any, Protocol
 
 from aiohttp import (
     ClientResponse,
@@ -16,6 +16,14 @@ from core.services.metrics import (
 )
 
 from .constants import HEADERS
+
+
+class IClientSession(Protocol):
+    async def request(
+        self, method: str, str_or_url: StrOrURL, **kwargs: Any
+    ) -> ClientResponse: ...
+
+    async def close(self) -> None: ...
 
 
 class InstrumentedClientSession:
@@ -58,13 +66,15 @@ class InstrumentedClientSession:
                 method=method, endpoint=endpoint
             ).dec()
 
-    async def close(self):
+    async def close(self) -> None:
         await self._session.close()
 
-    def __getattr__(self, __name: Any):
+    def __getattr__(self, __name: Any) -> Any:
         return getattr(self._session, __name)
 
 
-def get_client_session(timeout: float | None = None) -> ClientSession:
+def get_client_session(
+    timeout: float | None = None,
+) -> IClientSession:
     client_timeout = ClientTimeout(timeout)
     return InstrumentedClientSession(timeout=client_timeout, headers=HEADERS)

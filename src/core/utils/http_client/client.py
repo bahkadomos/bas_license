@@ -1,7 +1,7 @@
 import json
 from http.cookies import SimpleCookie
 from types import TracebackType
-from typing import Any, Literal, Self, overload
+from typing import Any, Literal, Self, cast, overload
 
 from aiohttp import ClientError, ClientSession
 from aiohttp_retry import ExponentialRetry, RetryClient, RetryOptionsBase
@@ -9,6 +9,7 @@ from aiohttp_retry import ExponentialRetry, RetryClient, RetryOptionsBase
 from .enums import HTTPResponseType
 from .exceptions import HTTPError
 from .schemas import HTTPResponse, JSONHTTPResponse, TextHTTPResponse
+from .session import IClientSession
 
 
 class SingleRetryClient(RetryClient):
@@ -26,9 +27,9 @@ class HTTPRetryClientBuilder:
         self._retry_option_class: RetryOptionsBase | None = None
         self._raise_for_status = False
 
-    def session(self, __value: ClientSession, /) -> Self:
+    def session(self, __value: IClientSession, /) -> Self:
         """Add instance of `aiohttp.ClientSession`."""
-        self._client_session = __value
+        self._client_session = cast(ClientSession, __value)
         return self
 
     def options_class(
@@ -55,7 +56,7 @@ class HTTPRetryClientBuilder:
 
 
 class RetryAiohttpClient:
-    def __init__(self, session: ClientSession) -> None:
+    def __init__(self, session: IClientSession) -> None:
         builder = HTTPRetryClientBuilder()
         retry_options = ExponentialRetry()
         self._client = (
