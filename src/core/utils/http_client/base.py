@@ -1,14 +1,13 @@
 from http.cookies import SimpleCookie
 from typing import Any, Literal, Protocol, overload
 
-from aiohttp import ClientSession
-
 from .enums import HTTPResponseType
 from .schemas import HTTPResponse, JSONHTTPResponse, TextHTTPResponse
+from .session import IClientSession
 
 
 class IHTTPClient(Protocol):
-    def __init__(self, session: ClientSession) -> None: ...
+    def __init__(self, session: IClientSession) -> None: ...
 
     @overload
     async def request(
