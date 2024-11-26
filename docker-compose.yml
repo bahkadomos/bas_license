@@ -51,7 +51,7 @@ services:
     environment:
       POSTGRES_HOST: "db"
     command: >
-      sh -c "alembic upgrade head
+      sh -c "make migrations
       && uvicorn --app-dir ./src main:app --host 0.0.0.0 --port 8000 --reload"
     depends_on:
       - db
@@ -69,7 +69,7 @@ services:
     environment:
       POSTGRES_HOST: "db-dev"
     command: >
-      sh -c "alembic upgrade head
+      sh -c "make migrations
       && uvicorn --app-dir ./src main:app --host 0.0.0.0 --port 8000 --reload"
     depends_on:
       - db-dev
