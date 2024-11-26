@@ -17,7 +17,7 @@ x-grafana: &default-grafana
   restart: unless-stopped
   ports:
     - "3000:3000"
-  environment:
+  environment: &default-grafana-env
     GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: "/var/lib/grafana/dashboards/dashboard.json"
 
 x-web: &default-web
@@ -68,7 +68,7 @@ services:
   grafana-dev:
     <<: *default-grafana
     environment:
-      <<: *default-grafana.environment
+      <<: *default-grafana-env
       GF_AUTH_ANONYMOUS_ENABLED: "true"
       GF_AUTH_BASIC_ENABLED: "false"
       GF_AUTH_ANONYMOUS_ORG_ROLE: "Admin"
