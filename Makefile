@@ -1,5 +1,8 @@
+HOST ?= 0.0.0.0
+PORT ?= 8000
+
 start:
-	uvicorn --app-dir ./src main:app --host 0.0.0.0 --port 8000 --reload
+	uvicorn --app-dir ./src main:app --host $(HOST) --port $(PORT) --reload
 typecheck:
 	mypy
 lint:
