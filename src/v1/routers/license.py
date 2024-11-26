@@ -13,7 +13,7 @@ from core.schemas import (
 from v1.dependencies import BasWorkerDependency, TaskUseCaseDependency
 from v1.exceptions import NotFoundError
 
-router = APIRouter(prefix="/v1/license")
+router = APIRouter(prefix="/v1/license", tags=["License"])
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
