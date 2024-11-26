@@ -43,6 +43,39 @@ services:
     profiles:
       - dev
 
+  grafana:
+    image: grafana/grafana-enterprise:latest
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: "/var/lib/grafana/dashboards/dashboard.json"
+    volumes:
+      - ./monitoring/grafana/dev-datasource.yml:/etc/grafana/provisioning/datasources/datasource.yml
+      - ./monitoring/grafana/dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yml
+      - ./monitoring/grafana/dashboard.json:/var/lib/grafana/dashboards/dashboard.json
+      - grafana-data:/var/lib/grafana/
+    profiles:
+      - production
+
+  grafana-dev:
+    image: grafana/grafana-enterprise:latest
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: "/var/lib/grafana/dashboards/dashboard.json"
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_BASIC_ENABLED: "false"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: "Admin"
+    volumes:
+      - ./monitoring/grafana/dev-datasource.yml:/etc/grafana/provisioning/datasources/datasource.yml
+      - ./monitoring/grafana/dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yml
+      - ./monitoring/grafana/dashboard.json:/var/lib/grafana/dashboards/dashboard.json
+      - grafana-data-dev:/var/lib/grafana/
+    profiles:
+      - dev
+
   web:
     build: .
     restart: on-failure
@@ -82,3 +115,5 @@ volumes:
   db-data-dev:
   prometheus-data:
   prometheus-data-dev:
+  grafana-data:
+  grafana-data-dev:
