@@ -1,31 +1,45 @@
+x-postgres: &default-postgres
+  image: postgres:17-alpine
+  restart: unless-stopped
+  ports:
+    - "5432:5432"
+  volumes:
+    - db-data:/var/lib/postgresql/data
+
+x-prometheus: &default-prometheus
+  image: prom/prometheus:latest
+  restart: unless-stopped
+  ports:
+    - "9090:9090"
+
+x-grafana: &default-grafana
+  image: grafana/grafana-enterprise:latest
+  restart: unless-stopped
+  ports:
+    - "3000:3000"
+  environment:
+    GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: "/var/lib/grafana/dashboards/dashboard.json"
+
+x-web: &default-web
+  build: .
+  restart: on-failure
+  command: sh -c "make migrations && make start"
+
 services:
   db:
-    image: postgres:17-alpine
-    restart: unless-stopped
-    ports:
-      - "5432:5432"
-    volumes:
-      - db-data:/var/lib/postgresql/data
+    <<: *default-postgres
     profiles:
       - production
 
   db-dev:
-    image: postgres:17-alpine
-    restart: unless-stopped
-    ports:
-      - "5432:5432"
+    <<: *default-postgres
     env_file:
       - .env
-    volumes:
-      - db-data-dev:/var/lib/postgresql/data
     profiles:
       - dev
 
   prometheus:
-    image: prom/prometheus:latest
-    restart: unless-stopped
-    ports:
-      - "9090:9090"
+    <<: *default-prometheus
     volumes:
       - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus-data:/prometheus/
@@ -33,25 +47,18 @@ services:
       - production
 
   prometheus-dev:
+    <<: *default-prometheus
     image: prom/prometheus:latest
-    restart: unless-stopped
-    ports:
-      - "9090:9090"
     volumes:
       - ./monitoring/prometheus/dev-prometheus.yml:/etc/prometheus/prometheus.yml
-      - prometheus-data-dev:/prometheus/
+      - prometheus-data:/prometheus/
     profiles:
       - dev
 
   grafana:
-    image: grafana/grafana-enterprise:latest
-    restart: unless-stopped
-    ports:
-      - "3000:3000"
-    environment:
-      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: "/var/lib/grafana/dashboards/dashboard.json"
+    <<: *default-grafana
     volumes:
-      - ./monitoring/grafana/dev-datasource.yml:/etc/grafana/provisioning/datasources/datasource.yml
+      - ./monitoring/grafana/datasource.yml:/etc/grafana/provisioning/datasources/datasource.yml
       - ./monitoring/grafana/dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yml
       - ./monitoring/grafana/dashboard.json:/var/lib/grafana/dashboards/dashboard.json
       - grafana-data:/var/lib/grafana/
@@ -59,12 +66,9 @@ services:
       - production
 
   grafana-dev:
-    image: grafana/grafana-enterprise:latest
-    restart: unless-stopped
-    ports:
-      - "3000:3000"
+    <<: *default-grafana
     environment:
-      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: "/var/lib/grafana/dashboards/dashboard.json"
+      <<: *default-grafana.environment
       GF_AUTH_ANONYMOUS_ENABLED: "true"
       GF_AUTH_BASIC_ENABLED: "false"
       GF_AUTH_ANONYMOUS_ORG_ROLE: "Admin"
@@ -72,18 +76,16 @@ services:
       - ./monitoring/grafana/dev-datasource.yml:/etc/grafana/provisioning/datasources/datasource.yml
       - ./monitoring/grafana/dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yml
       - ./monitoring/grafana/dashboard.json:/var/lib/grafana/dashboards/dashboard.json
-      - grafana-data-dev:/var/lib/grafana/
+      - grafana-data:/var/lib/grafana/
     profiles:
       - dev
 
   web:
-    build: .
-    restart: on-failure
+    <<: *default-web
     ports:
       - "80:8000"
     environment:
       POSTGRES_HOST: "db"
-    command: sh -c "make migrations && make start"
     depends_on:
       - db
       - prometheus
@@ -91,15 +93,13 @@ services:
       - production
 
   web-dev:
-    build: .
-    restart: on-failure
+    <<: *default-web
     ports:
       - "8000:8000"
     env_file:
       - .env
     environment:
       POSTGRES_HOST: "db-dev"
-    command: sh -c "make migrations && make start"
     depends_on:
       - db-dev
       - prometheus-dev
@@ -108,8 +108,5 @@ services:
 
 volumes:
   db-data:
-  db-data-dev:
   prometheus-data:
-  prometheus-data-dev:
   grafana-data:
-  grafana-data-dev:
