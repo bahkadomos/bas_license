@@ -1,5 +1,4 @@
 import asyncio
-import traceback
 from typing import Protocol
 
 from core._types import UUIDv4
@@ -58,14 +57,8 @@ class BasWorker:
     async def __call__(
         self, task_data_id: UUIDv4, user: str, script: str
     ) -> None:
-        try:
-            while True:
-                license_data = await self._get_license_data(user, script)
-                if license_data.status != LicenseResultStatus.not_authorized:
-                    break
-            await self._save_license_data(task_data_id, license_data)
-        except Exception:
-            traceback.print_exc()
+        license_data = await self._get_license_data(user, script)
+        await self._save_license_data(task_data_id, license_data)
 
     def _get_env_session(self) -> str | None:
         return self._env_manager.get(self.ENV_SESSION)
@@ -82,17 +75,20 @@ class BasWorker:
         self, user: str, script: str
     ) -> LicenseResponseResultSchema:
         async with self._condition:
-            license_data = await self._api_client.get_user_license(
-                user, script
-            )
-            if await self._needs_session_update(license_data):
+            try:
+                license_data = await self._api_client.get_user_license(
+                    user, script
+                )
+            except HTTPError:
+                raise  # TODO: send to prometeus metrics
+            if self._needs_session_update(license_data):
                 await self._ensure_session_update()
                 license_data = await self._api_client.get_user_license(
                     user, script
                 )
             return license_data
 
-    async def _needs_session_update(
+    def _needs_session_update(
         self, license_data: LicenseResponseResultSchema
     ) -> bool:
         return license_data.status == LicenseResultStatus.not_authorized
@@ -105,7 +101,7 @@ class BasWorker:
             try:
                 await self._update_session()
             except (BasError, HTTPError, RecaptchaError):
-                pass  # TODO: send to prometeus metrics
+                raise  # TODO: send to prometeus metrics
             finally:
                 self._locked = False
                 self._condition.notify_all()
