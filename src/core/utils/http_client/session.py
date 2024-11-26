@@ -69,7 +69,7 @@ class InstrumentedClientSession:
     async def close(self) -> None:
         await self._session.close()
 
-    def __getattr__(self, __name: Any) -> Any:
+    def __getattr__(self, __name: str) -> Any:
         return getattr(self._session, __name)
 
 
