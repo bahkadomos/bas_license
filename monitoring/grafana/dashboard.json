@@ -40,8 +40,8 @@
                         "barAlignment": 0,
                         "barWidthFactor": 0.6,
                         "drawStyle": "line",
-                        "fillOpacity": 0,
-                        "gradientMode": "none",
+                        "fillOpacity": 100,
+                        "gradientMode": "opacity",
                         "hideFrom": {
                             "legend": false,
                             "tooltip": false,
@@ -108,9 +108,9 @@
                         "uid": "PBFA97CFB590B2093"
                     },
                     "disableTextWrap": false,
-                    "editorMode": "builder",
+                    "editorMode": "code",
                     "exemplar": false,
-                    "expr": "changes(http_requests_total[$__interval])",
+                    "expr": "rate(http_requests_total{status=~\"2..\"}[1h])",
                     "format": "heatmap",
                     "fullMetaSearch": false,
                     "hide": false,
@@ -123,7 +123,102 @@
                     "useBackend": false
                 }
             ],
-            "title": "API requests count changes",
+            "title": "Success API requests",
+            "type": "timeseries"
+        },
+        {
+            "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "palette-classic"
+                    },
+                    "custom": {
+                        "axisBorderShow": false,
+                        "axisCenteredZero": false,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "barAlignment": -1,
+                        "barWidthFactor": 0.6,
+                        "drawStyle": "line",
+                        "fillOpacity": 100,
+                        "gradientMode": "opacity",
+                        "hideFrom": {
+                            "legend": false,
+                            "tooltip": false,
+                            "viz": false
+                        },
+                        "insertNulls": false,
+                        "lineInterpolation": "smooth",
+                        "lineStyle": {
+                            "fill": "solid"
+                        },
+                        "lineWidth": 1,
+                        "pointSize": 4,
+                        "scaleDistribution": {
+                            "type": "linear"
+                        },
+                        "showPoints": "auto",
+                        "spanNulls": false,
+                        "stacking": {
+                            "group": "A",
+                            "mode": "normal"
+                        },
+                        "thresholdsStyle": {
+                            "mode": "off"
+                        }
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            },
+                            {
+                                "color": "red",
+                                "value": 80
+                            }
+                        ]
+                    }
+                },
+                "overrides": []
+            },
+            "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 12,
+                "y": 0
+            },
+            "id": 3,
+            "options": {
+                "legend": {
+                    "calcs": [],
+                    "displayMode": "list",
+                    "placement": "bottom",
+                    "showLegend": true
+                },
+                "tooltip": {
+                    "mode": "single",
+                    "sort": "none"
+                }
+            },
+            "pluginVersion": "11.3.1",
+            "targets": [
+                {
+                    "editorMode": "code",
+                    "expr": "rate(http_requests_total{status=~\"4..|5..\"}[1h])",
+                    "legendFormat": "__auto",
+                    "range": true,
+                    "refId": "A"
+                }
+            ],
+            "title": "Error API requests",
             "type": "timeseries"
         },
         {
@@ -145,8 +240,129 @@
                         "barAlignment": 0,
                         "barWidthFactor": 0.6,
                         "drawStyle": "line",
-                        "fillOpacity": 0,
-                        "gradientMode": "none",
+                        "fillOpacity": 100,
+                        "gradientMode": "opacity",
+                        "hideFrom": {
+                            "legend": false,
+                            "tooltip": false,
+                            "viz": false
+                        },
+                        "insertNulls": false,
+                        "lineInterpolation": "linear",
+                        "lineWidth": 1,
+                        "pointSize": 5,
+                        "scaleDistribution": {
+                            "type": "linear"
+                        },
+                        "showPoints": "auto",
+                        "spanNulls": false,
+                        "stacking": {
+                            "group": "A",
+                            "mode": "none"
+                        },
+                        "thresholdsStyle": {
+                            "mode": "off"
+                        }
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            },
+                            {
+                                "color": "red",
+                                "value": 80
+                            }
+                        ]
+                    }
+                },
+                "overrides": [
+                    {
+                        "__systemRef": "hideSeriesFrom",
+                        "matcher": {
+                            "id": "byNames",
+                            "options": {
+                                "mode": "exclude",
+                                "names": [
+                                    "{__name__=\"outgoing_http_requests_total\", endpoint=\"https://api.capmonster.cloud/createTask\", instance=\"web-dev:8000\", job=\"bas-license\", method=\"POST\", status_code=\"200\"}"
+                                ],
+                                "prefix": "All except:",
+                                "readOnly": true
+                            }
+                        },
+                        "properties": [
+                            {
+                                "id": "custom.hideFrom",
+                                "value": {
+                                    "legend": false,
+                                    "tooltip": false,
+                                    "viz": true
+                                }
+                            }
+                        ]
+                    }
+                ]
+            },
+            "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 0,
+                "y": 8
+            },
+            "id": 2,
+            "options": {
+                "legend": {
+                    "calcs": [],
+                    "displayMode": "list",
+                    "placement": "bottom",
+                    "showLegend": true
+                },
+                "tooltip": {
+                    "mode": "single",
+                    "sort": "none"
+                }
+            },
+            "pluginVersion": "11.3.1",
+            "targets": [
+                {
+                    "disableTextWrap": false,
+                    "editorMode": "code",
+                    "expr": "rate(outgoing_http_requests_total{status_code=~\"2..\"}[1h])",
+                    "fullMetaSearch": false,
+                    "includeNullMetadata": false,
+                    "legendFormat": "__auto",
+                    "range": true,
+                    "refId": "Outgoing requests",
+                    "useBackend": false
+                }
+            ],
+            "title": "Success outgoing requests",
+            "type": "timeseries"
+        },
+        {
+            "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "palette-classic"
+                    },
+                    "custom": {
+                        "axisBorderShow": false,
+                        "axisCenteredZero": false,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "barAlignment": 0,
+                        "barWidthFactor": 0.6,
+                        "drawStyle": "line",
+                        "fillOpacity": 100,
+                        "gradientMode": "opacity",
                         "hideFrom": {
                             "legend": false,
                             "tooltip": false,
@@ -190,9 +406,9 @@
                 "h": 8,
                 "w": 12,
                 "x": 12,
-                "y": 0
+                "y": 8
             },
-            "id": 2,
+            "id": 4,
             "options": {
                 "legend": {
                     "calcs": [],
@@ -208,18 +424,248 @@
             "pluginVersion": "11.3.1",
             "targets": [
                 {
-                    "disableTextWrap": false,
-                    "editorMode": "builder",
-                    "expr": "changes(outgoing_http_requests_total[$__interval])",
-                    "fullMetaSearch": false,
-                    "includeNullMetadata": false,
+                    "editorMode": "code",
+                    "expr": "rate(outgoing_http_requests_total{status_code=~\"4..|5..\"}[1h])",
                     "legendFormat": "__auto",
                     "range": true,
-                    "refId": "Outgoing requests",
-                    "useBackend": false
+                    "refId": "A"
                 }
             ],
-            "title": "Outgoing requests",
+            "title": "Error outgoing requests",
+            "type": "timeseries"
+        },
+        {
+            "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "palette-classic"
+                    },
+                    "custom": {
+                        "axisBorderShow": false,
+                        "axisCenteredZero": false,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "barAlignment": 0,
+                        "barWidthFactor": 0.6,
+                        "drawStyle": "line",
+                        "fillOpacity": 100,
+                        "gradientMode": "opacity",
+                        "hideFrom": {
+                            "legend": false,
+                            "tooltip": false,
+                            "viz": false
+                        },
+                        "insertNulls": false,
+                        "lineInterpolation": "linear",
+                        "lineWidth": 1,
+                        "pointSize": 5,
+                        "scaleDistribution": {
+                            "type": "linear"
+                        },
+                        "showPoints": "auto",
+                        "spanNulls": false,
+                        "stacking": {
+                            "group": "A",
+                            "mode": "none"
+                        },
+                        "thresholdsStyle": {
+                            "mode": "off"
+                        }
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            },
+                            {
+                                "color": "red",
+                                "value": 0.3
+                            }
+                        ]
+                    }
+                },
+                "overrides": [
+                    {
+                        "__systemRef": "hideSeriesFrom",
+                        "matcher": {
+                            "id": "byNames",
+                            "options": {
+                                "mode": "exclude",
+                                "names": [
+                                    "{handler=\"/v1/license/result/\", instance=\"web-dev:8000\", job=\"bas-license\", method=\"POST\"}"
+                                ],
+                                "prefix": "All except:",
+                                "readOnly": true
+                            }
+                        },
+                        "properties": [
+                            {
+                                "id": "custom.hideFrom",
+                                "value": {
+                                    "legend": false,
+                                    "tooltip": false,
+                                    "viz": true
+                                }
+                            }
+                        ]
+                    }
+                ]
+            },
+            "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 0,
+                "y": 16
+            },
+            "id": 5,
+            "options": {
+                "legend": {
+                    "calcs": [],
+                    "displayMode": "list",
+                    "placement": "bottom",
+                    "showLegend": true
+                },
+                "tooltip": {
+                    "mode": "single",
+                    "sort": "none"
+                }
+            },
+            "pluginVersion": "11.3.1",
+            "targets": [
+                {
+                    "editorMode": "code",
+                    "expr": "rate(http_request_duration_seconds_sum[1h]) / rate(http_request_duration_seconds_count[1h])",
+                    "legendFormat": "__auto",
+                    "range": true,
+                    "refId": "A"
+                }
+            ],
+            "title": "Requests latency, sec",
+            "type": "timeseries"
+        },
+        {
+            "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "palette-classic"
+                    },
+                    "custom": {
+                        "axisBorderShow": false,
+                        "axisCenteredZero": false,
+                        "axisColorMode": "text",
+                        "axisLabel": "",
+                        "axisPlacement": "auto",
+                        "barAlignment": 0,
+                        "barWidthFactor": 0.6,
+                        "drawStyle": "line",
+                        "fillOpacity": 100,
+                        "gradientMode": "opacity",
+                        "hideFrom": {
+                            "legend": false,
+                            "tooltip": false,
+                            "viz": false
+                        },
+                        "insertNulls": false,
+                        "lineInterpolation": "smooth",
+                        "lineWidth": 1,
+                        "pointSize": 5,
+                        "scaleDistribution": {
+                            "type": "linear"
+                        },
+                        "showPoints": "auto",
+                        "spanNulls": false,
+                        "stacking": {
+                            "group": "A",
+                            "mode": "none"
+                        },
+                        "thresholdsStyle": {
+                            "mode": "off"
+                        }
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            },
+                            {
+                                "color": "red",
+                                "value": 80
+                            }
+                        ]
+                    }
+                },
+                "overrides": [
+                    {
+                        "__systemRef": "hideSeriesFrom",
+                        "matcher": {
+                            "id": "byNames",
+                            "options": {
+                                "mode": "exclude",
+                                "names": [
+                                    "/v1/license/result/"
+                                ],
+                                "prefix": "All except:",
+                                "readOnly": true
+                            }
+                        },
+                        "properties": [
+                            {
+                                "id": "custom.hideFrom",
+                                "value": {
+                                    "legend": false,
+                                    "tooltip": false,
+                                    "viz": true
+                                }
+                            }
+                        ]
+                    }
+                ]
+            },
+            "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 12,
+                "y": 16
+            },
+            "id": 6,
+            "options": {
+                "legend": {
+                    "calcs": [],
+                    "displayMode": "list",
+                    "placement": "bottom",
+                    "showLegend": true
+                },
+                "tooltip": {
+                    "mode": "single",
+                    "sort": "none"
+                }
+            },
+            "pluginVersion": "11.3.1",
+            "targets": [
+                {
+                    "editorMode": "code",
+                    "expr": "sum by (handler) (rate(http_requests_total[1m]))",
+                    "legendFormat": "__auto",
+                    "range": true,
+                    "refId": "A"
+                }
+            ],
+            "title": "RPS",
             "type": "timeseries"
         }
     ],
@@ -237,6 +683,6 @@
     "timezone": "browser",
     "title": "Default",
     "uid": "be540gqkl49vka",
-    "version": 7,
+    "version": 3,
     "weekStart": ""
 }
