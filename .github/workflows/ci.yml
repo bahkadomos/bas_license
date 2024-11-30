@@ -5,7 +5,7 @@ env:
   DEBUG: false
   POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
   POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-  POSTGRES_HOST: "127.0.0.1"
+  POSTGRES_HOST: "postgres"
   POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
   POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
   POSTGRES_TEST_DB: ${{ secrets.POSTGRES_TEST_DB }}
