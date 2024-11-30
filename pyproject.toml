@@ -1,0 +1,77 @@
+[tool.poetry]
+name = "bas-license"
+version = "0.1.0"
+description = ""
+authors = [""]
+readme = "README.md"
+packages = [
+    { include = "scripts" },
+]
+
+[tool.poetry.dependencies]
+python = "^3.13"
+fastapi = {extras = ["standard"], version = "^0.115.3"}
+sqlalchemy = {extras = ["asyncio"], version = "^2.0.36"}
+asyncpg = "^0.30.0"
+pydantic-settings = "^2.6.0"
+aiohttp = "^3.10.10"
+cryptography = "^43.0.3"
+lxml = "^5.3.0"
+aiohttp-retry = "^2.8.3"
+alembic = "^1.14.0"
+prometheus-fastapi-instrumentator = "^7.0.0"
+loki-logger-handler = "^1.0.2"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.3"
+httpx = "^0.27.2"
+pytest-asyncio = "^0.24.0"
+pytest-mock = "^3.14.0"
+mypy = "^1.13.0"
+lxml-stubs = "^0.5.1"
+ruff = "^0.7.2"
+pytest-dependency = "^0.6.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+addopts = "-rA -s -qv"
+required_plugins = [
+    "pytest-asyncio",
+    "pytest-dependency",
+    "pytest-mock",
+]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "module"
+testpaths = [
+    "tests",
+]
+pythonpath = [
+    ".",
+    "src",
+]
+consider_namespace_packages = "true"
+
+[tool.mypy]
+files = ["./src/main.py"]
+warn_no_return = "false"
+plugins = [
+    "pydantic.mypy",
+]
+
+[tool.ruff]
+target-version = "py313"
+line-length = 79
+
+[tool.ruff.lint]
+select = [
+    "A",  # prevent using keywords that clobber python builtins
+    "B",  # bugbear: security warnings
+    "E",  # pycodestyle
+    "F",  # pyflakes
+    "ISC",  # implicit string concatenation
+    "UP",  # alert you when better syntax is available in your python version
+]
