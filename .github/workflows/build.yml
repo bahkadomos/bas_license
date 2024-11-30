@@ -24,18 +24,18 @@ jobs:
         with:
           virtualenvs-create: true
           virtualenvs-in-project: true
-          virtualenvs-path: .venv
+          virtualenvs-path: venv
           installer-parallel: true
 
       - name: Load cached venv
         id: cached-poetry-dependencies
         uses: actions/cache@v4
         with:
-          path: .venv
+          path: venv
           key: venv-${{ runner.os }}-${{ inputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
 
       - name: Check for .venv files
-        run: ls -la .venv
+        run: ls -la venv
 
       - name: Install dependencies
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
@@ -44,8 +44,8 @@ jobs:
       - name: Install project
         run: poetry install --no-interaction
 
-      - name: Upload artifact .venv
+      - name: Upload artifact venv
         uses: actions/upload-artifact@v4
         with:
           name: venv
-          path: .venv
+          path: venv
