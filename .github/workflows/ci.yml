@@ -17,26 +17,44 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.13.0"]
+        python-version: ["3.13.x"]
     steps:
       - name: Copy files
         uses: actions/checkout@v4
+
       - name: Setup python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-          cache: poetry
-      - name: Install poetry
-        run: pipx install poetry
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+          virtualenvs-path: .venv
+          installer-parallel: true
+
+      - name: Load cached venv
+        id: cached-poetry-dependencies
+        uses: actions/cache@v4
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
+
       - name: Install dependencies
-        run: poetry install
+        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+        run: poetry install --no-interaction --no-root
+
+      - name: Install project
+        run: poetry install --no-interaction
 
   tests:
     needs: build
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     container: postgres:17-alpine
     services:
       postgres:
@@ -50,22 +68,25 @@ jobs:
           --health-timeout 5s
           --health-retries 5
     steps:
-      - uses: actions/checkout@v4
       - name: Run tests
-        run: make tests
+        run: |
+          source .venv/bin/activate
+          make tests
 
   lint:
     needs: build
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
       - name: Run linter
-        run: make lint
+        run: |
+          source .venv/bin/activate
+          make lint
 
   typecheck:
     needs: build
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
       - name: Run typecheck
-        run: make typecheck
+        run: |
+          source .venv/bin/activate
+          make typecheck
