@@ -19,9 +19,6 @@ jobs:
         with:
           python-version: ${{ inputs.python-version }}
 
-      - name: Set POETRY_HOME environment variable
-        run: echo "POETRY_HOME=${{ github.workspace }}/.poetry" >> $GITHUB_ENV
-
       - name: Install Poetry
         uses: snok/install-poetry@v1
         with:
@@ -29,9 +26,6 @@ jobs:
           virtualenvs-in-project: true
           virtualenvs-path: .venv
           installer-parallel: true
-
-      - name: Add Poetry to PATH
-        run: echo "${{ github.workspace }}/.poetry/bin" >> $GITHUB_PATH
 
       - name: Load cached venv
         id: cached-poetry-dependencies
@@ -55,14 +49,4 @@ jobs:
         with:
           name: venv
           path: venv.tar.gz
-          if-no-files-found: error
-
-      - name: Create Poetry archive
-        run: tar -czf poetry.tar.gz .poetry
-
-      - name: Upload Poetry artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: poetry
-          path: poetry.tar.gz
           if-no-files-found: error
