@@ -42,14 +42,26 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Download artifact
+      - name: Download venv artifact
         uses: actions/download-artifact@v4
         with:
           name: venv
           path: ./
 
-      - name: Unpack archive
+      - name: Unpack venv archive
         run: tar -xzf venv.tar.gz
+
+      - name: Download Poetry artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: poetry
+          path: ./
+
+      - name: Unpack Poetry archive
+        run: tar -xzf poetry.tar.gz
+
+      - name: Add Poetry to PATH
+        run: echo "${{ github.workspace }}/.poetry/bin" >> $GITHUB_PATH
 
       - name: Run tests
         run: |
@@ -93,6 +105,18 @@ jobs:
 
       - name: Unpack archive
         run: tar -xzf venv.tar.gz
+
+      - name: Download Poetry artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: poetry
+          path: ./
+
+      - name: Unpack Poetry archive
+        run: tar -xzf poetry.tar.gz
+
+      - name: Add Poetry to PATH
+        run: echo "${{ github.workspace }}/.poetry/bin" >> $GITHUB_PATH
 
       - name: Run typecheck
         run: |

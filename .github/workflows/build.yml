@@ -41,12 +41,22 @@ jobs:
       - name: Install project
         run: poetry install --no-interaction
 
-      - name: Create archive
+      - name: Create venv archive
         run: tar -czf venv.tar.gz .venv
 
-      - name: Upload artifact
+      - name: Upload venv artifact
         uses: actions/upload-artifact@v4
         with:
           name: venv
           path: venv.tar.gz
+          if-no-files-found: error
+
+      - name: Create Poetry archive
+        run: tar -czf poetry.tar.gz .poetry
+
+      - name: Upload Poetry artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: poetry
+          path: poetry.tar.gz
           if-no-files-found: error
