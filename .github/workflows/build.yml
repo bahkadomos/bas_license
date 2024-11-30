@@ -31,7 +31,7 @@ jobs:
         id: cached-poetry-dependencies
         uses: actions/cache@v4
         with:
-          path: venv
+          path: .venv
           key: venv-${{ runner.os }}-${{ inputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
 
       - name: Check for .venv files
