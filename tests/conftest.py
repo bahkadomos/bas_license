@@ -1,9 +1,8 @@
 from collections.abc import AsyncGenerator, Awaitable, Callable
 from contextlib import asynccontextmanager
 from dataclasses import dataclass
-from typing import Annotated, Any
+from typing import Any
 
-from pydantic import Field, computed_field
 import pytest
 from aiohttp import ClientSession, web
 from aiohttp.test_utils import TestClient, TestServer
@@ -28,12 +27,11 @@ from core.utils import EnvManager, RetryAiohttpClient
 from core.utils.http_client.client import SingleRetryClient
 from v1.dependencies import get_bas_worker, get_http_client
 
-from .helpers import App, create_sqlalchemy_tables, drop_sqlalchemy_tables
-
-
-@asynccontextmanager
-async def lifespan(_: FastAPI) -> AsyncGenerator[None]:
-    yield
+from .helpers import (
+    App,
+    create_sqlalchemy_tables,
+    drop_sqlalchemy_tables,
+)
 
 
 @dataclass(kw_only=True)
@@ -47,18 +45,6 @@ class AiohttpClientEndpoint:
     router: str
     handler: str
     method: str
-
-
-class AppSettings(Settings):
-    postgres_test_db: Annotated[str, Field(alias="POSTGRES_TEST_DB")]
-
-    @computed_field
-    @property
-    def test_dsn(self) -> str:
-        return ("postgresql+asyncpg://"
-                f"{self.postgres_user}:{self.postgres_password}"
-                f"@{self.postgres_host}:{self.postgres_port}"
-                f"/{self.postgres_test_db}")
 
 
 class MemoryManager(EnvManager):
@@ -123,13 +109,13 @@ def mock_bas_auth_client(mocker: MockerFixture) -> None:
 
 
 @pytest.fixture(scope="module")
-def settings() -> AppSettings:
-    return AppSettings()
+def settings() -> Settings:
+    return Settings()
 
 
 @pytest.fixture(scope="module")
-def dsn(settings: AppSettings) -> str:
-    return settings.test_dsn
+def dsn(settings: Settings) -> str:
+    return settings.dsn
 
 
 @pytest.fixture(scope="module")
@@ -161,6 +147,10 @@ async def aiohttp_client() -> (
 @pytest.fixture(scope="module")
 async def app(dsn: str) -> AsyncGenerator[FastAPI, None]:
     from main import create_app
+
+    @asynccontextmanager
+    async def lifespan(_: FastAPI) -> AsyncGenerator[None]:
+        yield
 
     app = create_app(enable_monitoring=False)
     app.router.lifespan_context = lifespan

@@ -7,12 +7,11 @@ from core.enums import LicenseResultStatus
 from core.services.bas import (
     BasAPIClient,
     BasAuthClient,
-    BasError,
     LicenseResponseResultSchema,
 )
-from core.services.recaptcha import BaseRecaptchaClient, RecaptchaError
+from core.services.recaptcha import BaseRecaptchaClient
 from core.services.uow import IUnitOfWork
-from core.utils import EnvManager, HTTPError, IHTTPClient
+from core.utils import EnvManager, IHTTPClient
 
 
 class IBasWorker(Protocol):
@@ -51,8 +50,7 @@ class BasWorker:
         self._env_manager = EnvManager()
         self._bas_session = self._get_env_session()
         self._set_bas_session()
-        self._condition = asyncio.Condition()
-        self._locked = False
+        self._session_lock = asyncio.Lock()
 
     async def __call__(
         self, task_data_id: UUIDv4, user: str, script: str
@@ -74,19 +72,15 @@ class BasWorker:
     async def _get_license_data(
         self, user: str, script: str
     ) -> LicenseResponseResultSchema:
-        async with self._condition:
-            try:
-                license_data = await self._api_client.get_user_license(
-                    user, script
-                )
-            except HTTPError:
-                raise  # TODO: send to prometeus metrics
-            if self._needs_session_update(license_data):
-                await self._ensure_session_update()
-                license_data = await self._api_client.get_user_license(
-                    user, script
-                )
-            return license_data
+        license_data = await self._api_client.get_user_license(
+            user, script
+        )
+        if self._needs_session_update(license_data):
+            await self._ensure_session_update()
+            license_data = await self._api_client.get_user_license(
+                user, script
+            )
+        return license_data
 
     def _needs_session_update(
         self, license_data: LicenseResponseResultSchema
@@ -94,17 +88,9 @@ class BasWorker:
         return license_data.status == LicenseResultStatus.not_authorized
 
     async def _ensure_session_update(self) -> None:
-        await self._condition.wait_for(lambda: not self._locked)
-
-        if not self._locked:
-            self._locked = True
-            try:
+        async with self._session_lock:
+            if not self._bas_session:
                 await self._update_session()
-            except (BasError, HTTPError, RecaptchaError):
-                raise  # TODO: send to prometeus metrics
-            finally:
-                self._locked = False
-                self._condition.notify_all()
 
     async def _update_session(self) -> None:
         self._bas_session = await self._auth_client.get_session_cookie()
