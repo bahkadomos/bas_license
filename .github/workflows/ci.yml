@@ -48,6 +48,7 @@ jobs:
         with:
           name: venv
           path: .venv
+          allow-dotfiles: true
 
       - name: Run tests
         run: |
@@ -66,6 +67,7 @@ jobs:
         with:
           name: venv
           path: .venv
+          allow-dotfiles: true
 
       - name: Run linter
         run: |
@@ -84,6 +86,7 @@ jobs:
         with:
           name: venv
           path: .venv
+          allow-dotfiles: true
 
       - name: Run typecheck
         run: |
