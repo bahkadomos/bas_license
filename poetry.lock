@@ -867,6 +867,17 @@ MarkupSafe = ">=2.0"
 i18n = ["Babel (>=2.7)"]
 
 [[package]]
+name = "loki-logger-handler"
+version = "1.0.2"
+description = "Handler designed for transmitting logs to Grafana Loki in JSON format."
+optional = false
+python-versions = ">=2.7"
+files = [
+    {file = "loki_logger_handler-1.0.2-py3-none-any.whl", hash = "sha256:aa1a9c933282c134a1e4271aba3cbaa2a3660eab6ea415bad7a072444ab98aa8"},
+    {file = "loki_logger_handler-1.0.2.tar.gz", hash = "sha256:f6114727a9e5e6f3f2058b9b5324d1cab6d1a04e802079f7b57a8aeb7bd0a112"},
+]
+
+[[package]]
 name = "lxml"
 version = "5.3.0"
 description = "Powerful and Pythonic XML processing library combining libxml2/libxslt with the ElementTree API."
@@ -2398,4 +2409,4 @@ propcache = ">=0.2.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.13"
-content-hash = "c8e6f31095f801a505b09cc23b4a6954f80dfcbbb93d3aadb28344e590ec4e21"
+content-hash = "e7102b61c2e6d8c28bdbd2ef406c13fab3401be2d7d1e8708ecda574f305ced1"
