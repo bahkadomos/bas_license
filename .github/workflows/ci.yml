@@ -27,9 +27,7 @@ jobs:
         image: postgres
         env:
           POSTGRES_USER: ${{ env.POSTGRES_USER }}
-          POSTGRES_HOST_AUTH_METHOD: trust
-        ports:
-          - ${{ env.POSTGRES_PORT }}:${{ env.POSTGRES_PORT }}
+          POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
