@@ -31,11 +31,6 @@ from v1.dependencies import get_bas_worker, get_http_client
 from .helpers import App, create_sqlalchemy_tables, drop_sqlalchemy_tables
 
 
-@asynccontextmanager
-async def lifespan(_: FastAPI) -> AsyncGenerator[None]:
-    yield
-
-
 @dataclass(kw_only=True)
 class AppClient:
     client: AsyncClient
@@ -161,6 +156,10 @@ async def aiohttp_client() -> (
 @pytest.fixture(scope="module")
 async def app(dsn: str) -> AsyncGenerator[FastAPI, None]:
     from main import create_app
+
+    @asynccontextmanager
+    async def lifespan(_: FastAPI) -> AsyncGenerator[None]:
+        yield
 
     app = create_app(enable_monitoring=False)
     app.router.lifespan_context = lifespan
