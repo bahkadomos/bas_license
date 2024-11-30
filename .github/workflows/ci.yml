@@ -16,16 +16,7 @@ env:
   CAPMONSTER_KEY: ${{ secrets.CAPMONSTER_KEY }}
 
 jobs:
-  build:
-    strategy:
-      matrix:
-        python-version: ["3.13.x"]
-    uses: ./.github/workflows/build.yml
-    with:
-      python-version: ${{ matrix.python-version }}
-
   tests:
-    needs: build
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -42,42 +33,26 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install Poetry
-        uses: snok/install-poetry@v1
+      - name: Install dependencies
+        uses: ./.github/actions/build
         with:
-          virtualenvs-create: false
-          virtualenvs-in-project: true
-
-      - name: Download venv artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: venv
-          path: ./
-
-      - name: Unpack venv archive
-        run: tar -xzf venv.tar.gz
+          python-version: "3.13"
 
       - name: Run tests
         run: |
           source .venv/bin/activate
-          poetry list
           make test
 
   lint:
-    needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Download artifact
-        uses: actions/download-artifact@v4
+      - name: Install dependencies
+        uses: ./.github/actions/build
         with:
-          name: venv
-          path: ./
-
-      - name: Unpack archive
-        run: tar -xzf venv.tar.gz
+          python-version: "3.13"
 
       - name: Run linter
         run: |
@@ -85,29 +60,15 @@ jobs:
           make lint
 
   typecheck:
-    needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install Poetry
-        uses: snok/install-poetry@v1
+      - name: Install dependencies
+        uses: ./.github/actions/build
         with:
-          virtualenvs-create: false
-          virtualenvs-in-project: true
-
-      - name: Download artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: venv
-          path: ./
-
-      - name: Unpack archive
-        run: tar -xzf venv.tar.gz
-
-      - name: Add Poetry to PATH
-        run: echo "${{ github.workspace }}/.poetry/bin" >> $GITHUB_PATH
+          python-version: "3.13"
 
       - name: Run typecheck
         run: |
