@@ -16,27 +16,27 @@ env:
   CAPMONSTER_KEY: ${{ secrets.CAPMONSTER_KEY }}
 
 jobs:
-  services:
-    postgres:
-      image: postgres:17-alpine
-      ports:
-        - "5432:5432"
-      options: >-
-        --health-cmd pg_isready
-        --health-interval 10s
-        --health-timeout 5s
-        --health-retries 5
-
   build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: ["3.13"]
+    services:
+      postgres:
+        image: postgres:17-alpine
+        ports:
+          - "5432:5432"
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - uses: actions/checkout@v4
       - name: Install poetry
         run: pipx install poetry
-      - uses: actions/setup-python@v5
+      - name: Setup python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
           cache: poetry
@@ -46,6 +46,16 @@ jobs:
   tests:
     needs: build
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        ports:
+          - "5432:5432"
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - uses: actions/checkout@v4
       - name: Run tests
