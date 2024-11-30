@@ -34,9 +34,6 @@ jobs:
           path: .venv
           key: venv-${{ runner.os }}-${{ inputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
 
-      - name: Check for .venv files
-        run: ls -la .venv
-
       - name: Install dependencies
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: poetry install --no-interaction --no-root
@@ -44,10 +41,12 @@ jobs:
       - name: Install project
         run: poetry install --no-interaction
 
-      - name: Upload artifact .venv
+      - name: Create archive
+        run: tar -czf venv.tar.gz .venv
+
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: venv
-          path: .venv
-          include-hidden-files: true
+          path: venv.tar.gz
           if-no-files-found: error
