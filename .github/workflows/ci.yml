@@ -43,23 +43,23 @@ jobs:
         cache: poetry
       - run: poetry install
 
-    tests:
-      needs: build
-      runs-on: ubuntu-latest
-      steps:
-        - name: Run tests
-          run: make tests
+  tests:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run tests
+        run: make tests
 
-    lint:
-      needs: build
-      runs-on: ubuntu-latest
-      steps:
-        - name: Run linter
-          run: make lint
+  lint:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run linter
+        run: make lint
 
-    typecheck:
-      needs: build
-      runs-on: ubuntu-latest
-      steps:
-        - name: Run typecheck
-          run: make typecheck
+  typecheck:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run typecheck
+        run: make typecheck
