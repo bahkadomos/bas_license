@@ -19,13 +19,13 @@ jobs:
   services:
     postgres:
       image: postgres:17-alpine
-    ports:
-    - "5432:5432"
-    options: >-
-      --health-cmd pg_isready
-      --health-interval 10s
-      --health-timeout 5s
-      --health-retries 5
+      ports:
+        - "5432:5432"
+      options: >-
+        --health-cmd pg_isready
+        --health-interval 10s
+        --health-timeout 5s
+        --health-retries 5
 
   build:
     runs-on: ubuntu-latest
@@ -37,16 +37,17 @@ jobs:
       - name: Install poetry
         run: pipx install poetry
       - uses: actions/setup-python@v5
-      - name: Setup python ${{ matrix.python-version }}
-      with:
-        python-version: ${{ matrix.python-version }}
-        cache: poetry
-      - run: poetry install
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: poetry
+      - name: Install dependencies
+        run: poetry install
 
   tests:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
       - name: Run tests
         run: make tests
 
@@ -54,6 +55,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
       - name: Run linter
         run: make lint
 
@@ -61,5 +63,6 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
       - name: Run typecheck
         run: make typecheck
