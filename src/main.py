@@ -53,4 +53,5 @@ def create_app(enable_monitoring: bool = True) -> FastAPI:
     return app
 
 
-app = create_app()
+if __name__ == "__main__":
+    app = create_app()
