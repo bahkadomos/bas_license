@@ -21,9 +21,10 @@ jobs:
     strategy:
       matrix:
         python-version: ["3.13"]
+    container: postgres:17-alpine
     services:
       postgres:
-        image: postgres:17-alpine
+        image: postgres
         env:
           POSTGRES_USER: ${{ env.POSTGRES_USER }}
           POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
