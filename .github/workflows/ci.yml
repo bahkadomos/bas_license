@@ -26,6 +26,7 @@ jobs:
         env:
           POSTGRES_USER: ${{ env.POSTGRES_USER }}
           POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
+          POSTGRES_DB: ${{ env.POSTGRES_DB }}
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -38,7 +39,7 @@ jobs:
       - name: Install dependencies
         uses: packetcoders/action-setup-cache-python-poetry@main
         with:
-          python-version: "3.13"
+          python-version: "3.13.0"
           poetry-version: "1.8.4"
 
       - name: Run tests
@@ -55,7 +56,7 @@ jobs:
       - name: Install dependencies
         uses: packetcoders/action-setup-cache-python-poetry@main
         with:
-          python-version: "3.13"
+          python-version: "3.13.0"
           poetry-version: "1.8.4"
 
       - name: Run linter
@@ -72,7 +73,7 @@ jobs:
       - name: Install dependencies
         uses: packetcoders/action-setup-cache-python-poetry@main
         with:
-          python-version: "3.13"
+          python-version: "3.13.0"
           poetry-version: "1.8.4"
 
       - name: Run typecheck
