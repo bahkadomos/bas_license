@@ -51,12 +51,10 @@ jobs:
       - name: Unpack archive
         run: tar -xzf venv.tar.gz
 
-      - name: Check files
-        run: ls -la
-
       - name: Run tests
         run: |
           source .venv/bin/activate
+          ls -la
           make test
 
   lint:
