@@ -19,7 +19,7 @@ class Base(AsyncAttrs, DeclarativeBase):
 
 def get_sqlalchemy_engine(dsn: str, *, debug: bool = False) -> AsyncEngine:
     return create_async_engine(
-        dsn, pool_size=100, max_overflow=0, pool_pre_ping=False, echo=debug
+        dsn, pool_size=10, max_overflow=20, pool_pre_ping=False, echo=debug
     )
 
 
