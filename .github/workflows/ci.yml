@@ -23,7 +23,7 @@ jobs:
       postgres:
         image: postgres:17-alpine
         ports:
-          - ${{ env.POSTGRES_PORT }}:${{ env.POSTGRES_PORT }}
+          - "${{ env.POSTGRES_PORT }}:${{ env.POSTGRES_PORT }}"
         env:
           POSTGRES_USER: ${{ env.POSTGRES_USER }}
           POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
