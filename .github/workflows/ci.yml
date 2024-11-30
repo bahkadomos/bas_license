@@ -1,6 +1,26 @@
 name: CI
 
 on:
+  push:
+    branches:
+      - dev
+      - main
+    paths:
+      - "src/**"
+      - "tests/**"
+      - "poetry.lock"
+      - "pyproject.toml"
+      - "Makefile"
+  pull_request:
+    branches:
+      - main
+      - dev
+    paths:
+      - "src/**"
+      - "tests/**"
+      - "poetry.lock"
+      - "pyproject.toml"
+      - "Makefile"
   workflow_dispatch:
 
 env:
