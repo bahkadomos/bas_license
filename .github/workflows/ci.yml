@@ -5,7 +5,7 @@ env:
   DEBUG: false
   POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
   POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-  POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
+  POSTGRES_HOST: postgres
   POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
   POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
   POSTGRES_TEST_DB: ${{ secrets.POSTGRES_TEST_DB }}
@@ -17,10 +17,10 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
-        python-version: ["3.13.0"]
+        python-version: ["3.13"]
     container: postgres:17-alpine
     services:
       postgres:
@@ -47,7 +47,7 @@ jobs:
 
   tests:
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     services:
       postgres:
         image: postgres:17-alpine
@@ -66,7 +66,7 @@ jobs:
 
   lint:
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
       - name: Run linter
@@ -74,7 +74,7 @@ jobs:
 
   typecheck:
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
       - name: Run typecheck
