@@ -55,7 +55,7 @@ jobs:
       - name: Run tests
         run: |
           source .venv/bin/activate
-          make tests
+          make test
 
   lint:
     needs: build
