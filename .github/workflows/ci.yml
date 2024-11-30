@@ -49,8 +49,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Check actions
-        run: ls -la .github/actions/build
       - name: Install dependencies
         uses: ./.github/actions/build
         with:
