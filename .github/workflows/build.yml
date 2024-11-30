@@ -34,6 +34,9 @@ jobs:
           path: .venv
           key: venv-${{ runner.os }}-${{ inputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
 
+      - name: Check for .venv files
+        run: ls -la .venv
+
       - name: Install dependencies
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: poetry install --no-interaction --no-root
