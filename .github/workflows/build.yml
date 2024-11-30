@@ -19,6 +19,9 @@ jobs:
         with:
           python-version: ${{ inputs.python-version }}
 
+      - name: Set POETRY_HOME environment variable
+        run: echo "POETRY_HOME=${{ github.workspace }}/.poetry" >> $GITHUB_ENV
+
       - name: Install Poetry
         uses: snok/install-poetry@v1
         with:
