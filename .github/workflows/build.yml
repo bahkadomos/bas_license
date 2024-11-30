@@ -26,7 +26,6 @@ jobs:
           virtualenvs-in-project: true
           virtualenvs-path: .venv
           installer-parallel: true
-          include-hidden-files: true
 
       - name: Load cached venv
         id: cached-poetry-dependencies
@@ -50,3 +49,5 @@ jobs:
         with:
           name: venv
           path: .venv
+          include-hidden-files: true
+          if-no-files-found: error
