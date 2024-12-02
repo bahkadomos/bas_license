@@ -25,7 +25,7 @@ from core.services.recaptcha import (
 from core.services.uow import IUnitOfWork, UnitOfWork
 from core.utils import RetryAiohttpClient
 from core.utils.http_client.client import SingleRetryClient
-from v1.dependencies import get_bas_worker, get_http_client
+from v1.dependencies import get_http_client
 
 from .helpers import (
     App,
@@ -180,20 +180,6 @@ def app_client_factory(
 @pytest.fixture(scope="module")
 def client(app_client: AppClient) -> AsyncClient:
     return app_client.client
-
-
-@pytest.fixture(scope="module")
-async def empty_client(
-    app: FastAPI,
-) -> AsyncGenerator[AsyncClient, None]:
-    """FastAPI test client without aiohttp session"""
-    app.state.http_session = None
-    app.dependency_overrides[get_bas_worker] = lambda: None
-
-    async with AsyncClient(
-        transport=ASGITransport(app=app), base_url="http://test_api"
-    ) as aclient:
-        yield aclient
 
 
 type CaptchaClientFactory = Callable[
