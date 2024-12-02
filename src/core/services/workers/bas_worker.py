@@ -72,7 +72,8 @@ class BasWorker:
                 await self._uow.commit()
 
     def _set_bas_session(self) -> None:
-        self._api_client.set_session_cookie(self._bas_session)
+        if self._bas_session:
+            self._api_client.set_session_cookie(self._bas_session)
 
     async def _get_license_data(
         self, user: str, script: str
