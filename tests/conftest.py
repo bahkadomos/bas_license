@@ -23,9 +23,9 @@ from core.services.recaptcha import (
     CapmonsterRecaptchaClient,
 )
 from core.services.uow import IUnitOfWork, UnitOfWork
-from core.utils import EnvManager, RetryAiohttpClient
+from core.utils import RetryAiohttpClient
 from core.utils.http_client.client import SingleRetryClient
-from v1.dependencies import get_bas_worker, get_http_client
+from v1.dependencies import get_http_client
 
 from .helpers import (
     App,
@@ -47,17 +47,6 @@ class AiohttpClientEndpoint:
     method: str
 
 
-class MemoryManager(EnvManager):
-    def __init__(self):
-        self._data = dict()
-
-    def get(self, key: str) -> str | None:
-        return self._data.get(key)
-
-    def set(self, key: str, value: str) -> None:
-        self._data[key] = value
-
-
 class AiohttpClient(RetryAiohttpClient):
     def __init__(
         self,
@@ -69,14 +58,6 @@ class AiohttpClient(RetryAiohttpClient):
 
     def set_cookie(self, cookies: dict[str, str]) -> None:
         self._client._client.session.cookie_jar.update_cookies(cookies)
-
-
-@pytest.fixture(autouse=True)
-def mock_env_manager(mocker: MockerFixture) -> None:
-    mocker.patch(
-        "core.services.workers.bas_worker.EnvManager",
-        new=MemoryManager,
-    )
 
 
 @pytest.fixture(autouse=True)
@@ -199,20 +180,6 @@ def app_client_factory(
 @pytest.fixture(scope="module")
 def client(app_client: AppClient) -> AsyncClient:
     return app_client.client
-
-
-@pytest.fixture(scope="module")
-async def empty_client(
-    app: FastAPI,
-) -> AsyncGenerator[AsyncClient, None]:
-    """FastAPI test client without aiohttp session"""
-    app.state.http_session = None
-    app.dependency_overrides[get_bas_worker] = lambda: None
-
-    async with AsyncClient(
-        transport=ASGITransport(app=app), base_url="http://test_api"
-    ) as aclient:
-        yield aclient
 
 
 type CaptchaClientFactory = Callable[

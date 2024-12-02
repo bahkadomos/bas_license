@@ -11,7 +11,7 @@ from core.services.bas import (
 )
 from core.services.recaptcha import BaseRecaptchaClient
 from core.services.uow import IUnitOfWork
-from core.utils import EnvManager, IHTTPClient
+from core.utils import IHTTPClient
 
 
 class IBasWorker(Protocol):
@@ -47,23 +47,29 @@ class BasWorker:
         )
         self._api_client = BasAPIClient(http_client)
         self._uow = uow
-        self._env_manager = EnvManager()
-        self._bas_session = self._get_env_session()
-        self._set_bas_session()
+        self._bas_session: str | None = None
         self._session_lock = asyncio.Lock()
 
     async def __call__(
         self, task_data_id: UUIDv4, user: str, script: str
     ) -> None:
+        if self._bas_session is None:
+            self._bas_session = await self._get_storage_session()
+            await self._ensure_session_update()
         license_data = await self._get_license_data(user, script)
         await self._save_license_data(task_data_id, license_data)
 
-    def _get_env_session(self) -> str | None:
-        return self._env_manager.get(self.ENV_SESSION)
+    async def _get_storage_session(self) -> str | None:
+        async with self._uow:
+            session = await self._uow.sessions.read_one()
+            await self._uow.commit()
+        return session
 
-    def _set_env_session(self) -> None:
+    async def _set_storage_session(self) -> None:
         if self._bas_session:
-            self._env_manager.set(self.ENV_SESSION, self._bas_session)
+            async with self._uow:
+                await self._uow.sessions.create_one(self._bas_session)
+                await self._uow.commit()
 
     def _set_bas_session(self) -> None:
         if self._bas_session:
@@ -76,6 +82,7 @@ class BasWorker:
             user, script
         )
         if self._needs_session_update(license_data):
+            self._bas_session = None
             await self._ensure_session_update()
             license_data = await self._api_client.get_user_license(
                 user, script
@@ -89,12 +96,12 @@ class BasWorker:
 
     async def _ensure_session_update(self) -> None:
         async with self._session_lock:
-            if not self._bas_session:
+            if self._bas_session is None:
                 await self._update_session()
 
     async def _update_session(self) -> None:
         self._bas_session = await self._auth_client.get_session_cookie()
-        self._set_env_session()
+        await self._set_storage_session()
         self._set_bas_session()
 
     async def _save_license_data(

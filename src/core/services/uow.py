@@ -7,11 +7,13 @@ from core.repositories import (
     ILicenseTasksDataRepository,
     ILicenseTasksRepository,
     IScriptsRepository,
+    ISessionsRepository,
     IUsersRepository,
     IUsersScriptsRepository,
     SQLAlchemyLicenseTasksDataRepository,
     SQLAlchemyLicenseTasksRepository,
     SQLAlchemyScriptsRepository,
+    SQLAlchemySessionsRepository,
     SQLAlchemyUsersRepository,
     SQLAlchemyUsersScriptsRepository,
 )
@@ -26,6 +28,9 @@ class IUnitOfWork(Protocol):
 
     @property
     def scripts(self) -> IScriptsRepository: ...
+
+    @property
+    def sessions(self) -> ISessionsRepository: ...
 
     @property
     def users(self) -> IUsersRepository: ...
@@ -64,6 +69,10 @@ class UnitOfWork:
     @property
     def scripts(self) -> IScriptsRepository:
         return SQLAlchemyScriptsRepository(self._session)
+
+    @property
+    def sessions(self) -> ISessionsRepository:
+        return SQLAlchemySessionsRepository(self._session)
 
     @property
     def users(self) -> IUsersRepository:
