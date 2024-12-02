@@ -1,5 +1,5 @@
 import asyncio
-from collections.abc import AsyncGenerator, Awaitable, Callable
+from collections.abc import AsyncGenerator, Callable
 
 import pytest
 from httpx import AsyncClient
@@ -54,29 +54,20 @@ async def app_client(
         yield client
 
 
-async def test_worker_lock(
+async def test_worker_lock_without_session(
     client: AsyncClient,
     mocker: MockerFixture,
 ):
     spy_update_session = mocker.spy(BasWorker, "_update_session")
-    sem = asyncio.Semaphore(5)
-
-    async def bounded_create_task(
-        username: str, script_name: str
-    ) -> Awaitable[str]:
-        async with sem:
-            await license_create_task(
-                client=client, username=username, script_name=script_name
-            )
 
     tasks = []
-    for i in range(25):
-        task = bounded_create_task(
+    for i in range(5):
+        task = license_create_task(
+            client=client,
             username=f"test_user_{i}",
             script_name=f"test_script_{i}",
         )
         tasks.append(task)
 
     await asyncio.gather(*tasks)
-
     assert spy_update_session.call_count == 1

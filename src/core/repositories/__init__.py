@@ -8,6 +8,7 @@ from .license_tasks_data import (
     SQLAlchemyLicenseTasksDataRepository,
 )
 from .scripts import IScriptsRepository, SQLAlchemyScriptsRepository
+from .sessions import ISessionsRepository, SQLAlchemySessionsRepository
 from .users import IUsersRepository, SQLAlchemyUsersRepository
 from .users_scripts import (
     IUsersScriptsRepository,
@@ -19,12 +20,14 @@ __all__ = [
     "ILicenseTasksDataRepository",
     "ILicenseTasksRepository",
     "IScriptsRepository",
+    "ISessionsRepository",
     "IUsersRepository",
     "IUsersScriptsRepository",
     "RepositoryError",
     "SQLAlchemyLicenseTasksDataRepository",
     "SQLAlchemyLicenseTasksRepository",
     "SQLAlchemyScriptsRepository",
+    "SQLAlchemySessionsRepository",
     "SQLAlchemyUsersRepository",
     "SQLAlchemyUsersScriptsRepository",
 ]

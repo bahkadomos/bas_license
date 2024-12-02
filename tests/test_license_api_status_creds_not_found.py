@@ -2,6 +2,9 @@ from collections.abc import AsyncGenerator, Callable
 
 import pytest
 from httpx import AsyncClient
+from pytest_mock import MockerFixture
+
+from core.services.workers import BasWorker
 
 from .conftest import AppClient
 from .helpers import (
@@ -30,7 +33,13 @@ async def app_client(
 async def test_license_create_task(
     client: AsyncClient,
     context: dict,
+    mocker: MockerFixture,
 ):
+    mocker.patch.object(
+        BasWorker,
+        "_get_storage_session",
+        return_value=f"session={App.SESSION}",
+    )
     task_id = await license_create_task(
         client=client,
         username="42",

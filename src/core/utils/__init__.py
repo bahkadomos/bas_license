@@ -1,5 +1,4 @@
 from .decorators import exc_wrapper
-from .env import EnvManager
 from .http_client import (
     CookieError,
     CookiesManager,
@@ -17,7 +16,6 @@ from .http_client import (
 __all__ = [
     "CookieError",
     "CookiesManager",
-    "EnvManager",
     "HTTPError",
     "HTTPResponse",
     "HTTPResponseType",
