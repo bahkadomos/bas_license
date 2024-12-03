@@ -4,9 +4,6 @@ version = "0.1.0"
 description = "BAS license checker"
 authors = ["bahladamos <bahladamos@protonmail.com>"]
 readme = "README.md"
-packages = [
-    { include = "scripts" },
-]
 
 [tool.poetry.dependencies]
 python = "^3.13"
