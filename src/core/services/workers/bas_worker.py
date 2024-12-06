@@ -22,6 +22,7 @@ class IBasWorker(Protocol):
         uow: IUnitOfWork,
         http_client: IHTTPClient,
         captcha_client: BaseRecaptchaClient,
+        logger: Logger,
     ) -> None: ...
 
     async def __call__(
