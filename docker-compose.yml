@@ -10,7 +10,7 @@ services:
       - db-data:/var/lib/postgresql/data
 
   prometheus:
-    image: prom/prometheus:latest
+    image: prom/prometheus:v3.0.1
     restart: unless-stopped
     ports:
       - "9090:9090"
