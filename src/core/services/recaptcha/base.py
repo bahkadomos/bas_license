@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from logging import Logger
 from typing import Any
 
 from core.config import settings
@@ -15,10 +16,15 @@ class BaseRecaptchaClient(ABC):
         super().__init_subclass__(**kwargs)
         cls.registry[service] = cls
 
-    def __init__(self, *, http_client: IHTTPClient) -> None:
+    def __init__(self, *, http_client: IHTTPClient, logger: Logger) -> None:
         self._client = http_client
         self._attempts = settings.captcha_attempts
         self._delay = settings.captcha_delay
+        self._logger = logger
+
+    @property
+    def logger(self) -> Logger:
+        return self._logger
 
     @exc_wrapper(AssertionError, RecaptchaError)
     async def create_task(self, site_key: str, page_url: str) -> Any:
@@ -37,8 +43,10 @@ class BaseRecaptchaClient(ABC):
         raise NotImplementedError()
 
 
-def get_recaptcha_client(http_client: IHTTPClient) -> BaseRecaptchaClient:
+def get_recaptcha_client(
+    http_client: IHTTPClient, logger: Logger
+) -> BaseRecaptchaClient:
     client_class = BaseRecaptchaClient.registry.get(settings.captcha_service)
     if client_class is None:
         raise ValueError(f"Unknown service: {settings.captcha_service}")
-    return client_class(http_client=http_client)
+    return client_class(http_client=http_client, logger=logger)

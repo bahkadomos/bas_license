@@ -1,5 +1,6 @@
 from datetime import datetime
 from http.cookies import CookieError
+from logging import Logger
 
 from core.enums import LicenseResultStatus
 from core.schemas import LicenseDetailsSchema
@@ -25,8 +26,9 @@ from .schemas import LicenseResponseResultSchema
 class BaseBasClient:
     SESSION_COOKIE_KEY = "session"
 
-    def __init__(self, http_client: IHTTPClient) -> None:
+    def __init__(self, http_client: IHTTPClient, logger: Logger) -> None:
         self._client = http_client
+        self._logger = logger
 
     def set_session_cookie(self, cookies: str) -> None:
         try:
@@ -51,8 +53,9 @@ class BasAuthClient(BaseBasClient):
         captcha_client: BaseRecaptchaClient,
         username: str,
         password: str,
+        logger: Logger,
     ) -> None:
-        super().__init__(http_client)
+        super().__init__(http_client, logger)
         self._captcha_client = captcha_client
         self._username = username
         self._password = password
@@ -106,18 +109,23 @@ class BasAuthClient(BaseBasClient):
         response = await self._login(token)
         error = self._get_auth_error(response.data)
         if error == self.CAPTCHA_SOLVED_WRONG:
+            self._logger.error("Captcha solved wrong")
             raise BasRecaptchaSolvedWrongError()
         elif error is not None:
+            self._logger.error("BAS auth error")
             raise BasAuthError()
 
         if response.url.human_repr() != self.SUCCESS_URL:
+            self._logger.error("BAS Premium is expired")
             raise BasPremiumExpiredError()
         cookies = self._client.get_cookie()
         if not cookies.values():
+            self._logger.error("BasCookieError: empty cookies")
             raise BasCookieError()
         try:
             return CookiesManager.dump(cookies, self.SESSION_COOKIE_KEY)
         except CookieError as e:
+            self._logger.error("BasCookieError", exc_info=e)
             raise BasCookieError() from e
 
 

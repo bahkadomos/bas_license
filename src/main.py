@@ -8,7 +8,7 @@ from prometheus_fastapi_instrumentator import Instrumentator
 from core.config import settings
 from core.models import get_sqlalchemy_engine
 from core.schemas import ErrorDetailsSchema, ErrorResponse
-from core.utils import get_client_session
+from core.utils import get_client_session, get_loki_logger, get_null_logger
 from v1.handlers import http_exception_handler, request_validation_handler
 from v1.middlewares import EncryptionMiddleware
 from v1.routers import license
@@ -19,6 +19,10 @@ def create_app(enable_monitoring: bool = True) -> FastAPI:
     async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
         app.state.engine = get_sqlalchemy_engine(settings.dsn)
         app.state.http_session = get_client_session(timeout=30)
+        if enable_monitoring:
+            app.state.logger = get_loki_logger()
+        else:
+            app.state.logger = get_null_logger()
 
         yield
 

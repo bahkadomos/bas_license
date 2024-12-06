@@ -32,3 +32,10 @@ class LicenseResultStatus(Enum):
     error: Annotated[
         Literal["error"], Doc("All another unhandled errors")
     ] = "error"
+
+
+class LoggerCallerTypes(Enum):
+    common = "Common"
+    validation_error = "Validation error"
+    http_exception = "HTTP exception"
+    http_error = "HTTP error"
