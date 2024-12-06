@@ -18,6 +18,7 @@ aiohttp-retry = "^2.8.3"
 alembic = "^1.14.0"
 prometheus-fastapi-instrumentator = "^7.0.0"
 loki-logger-handler = "^1.0.2"
+requests = "^2.32.3"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.3"
