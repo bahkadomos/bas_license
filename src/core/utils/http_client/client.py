@@ -1,10 +1,13 @@
 import json
 from http.cookies import SimpleCookie
+from logging import Logger
 from types import TracebackType
 from typing import Any, Literal, Self, cast, overload
 
-from aiohttp import ClientError, ClientSession
+from aiohttp import ClientError, ClientResponseError, ClientSession
 from aiohttp_retry import ExponentialRetry, RetryClient, RetryOptionsBase
+
+from core.enums import LoggerCallerTypes
 
 from .enums import HTTPResponseType
 from .exceptions import HTTPError
@@ -56,7 +59,7 @@ class HTTPRetryClientBuilder:
 
 
 class RetryAiohttpClient:
-    def __init__(self, session: IClientSession) -> None:
+    def __init__(self, session: IClientSession, logger: Logger) -> None:
         builder = HTTPRetryClientBuilder()
         retry_options = ExponentialRetry()
         self._client = (
@@ -65,6 +68,7 @@ class RetryAiohttpClient:
             .options_class(retry_options)
             .build()
         )
+        self._logger = logger
 
     @overload
     async def request(
@@ -119,6 +123,17 @@ class RetryAiohttpClient:
                 elif response_type == HTTPResponseType.text:
                     return TextHTTPResponse(data=data, **response_data)
         except ClientError as e:
+            extra = dict(caller=LoggerCallerTypes.http_error.value)
+            if isinstance(e, ClientResponseError):
+                extra.update(dict(
+                    response_url=response.real_url.human_repr(),
+                    response_status_code=str(response.status),
+                ))
+            self._logger.error("HTTP error", exc_info=e, extra=dict(
+                method=method,
+                request_url=url,
+                **extra,
+            ))
             raise HTTPError(e.args[0]) from e
 
     @overload

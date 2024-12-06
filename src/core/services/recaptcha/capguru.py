@@ -1,4 +1,5 @@
 import asyncio
+from logging import Logger
 from typing import Any
 
 from core.config import settings
@@ -17,8 +18,8 @@ class CapguruRecaptchaClient(
     CAPTCHA_NOT_READY = "CAPCHA_NOT_READY"
     CAPTCHA_UNSOLVABLE = "ERROR_CAPTCHA_UNSOLVABLE"
 
-    def __init__(self, *, http_client: IHTTPClient) -> None:
-        super().__init__(http_client=http_client)
+    def __init__(self, *, http_client: IHTTPClient, logger: Logger) -> None:
+        super().__init__(http_client=http_client, logger=logger)
         self._body = {"key": self.KEY, "json": 1}
 
     async def _create_task_impl(self, site_key: str, page_url: str) -> str:

@@ -1,4 +1,5 @@
 from http.cookies import SimpleCookie
+from logging import Logger
 from typing import Any, Literal, Protocol, overload
 
 from .enums import HTTPResponseType
@@ -7,7 +8,7 @@ from .session import IClientSession
 
 
 class IHTTPClient(Protocol):
-    def __init__(self, session: IClientSession) -> None: ...
+    def __init__(self, session: IClientSession, logger: Logger) -> None: ...
 
     @overload
     async def request(

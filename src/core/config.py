@@ -21,6 +21,9 @@ class Settings(BaseSettings):
     postgres_port: Annotated[str, Field(alias="POSTGRES_PORT")]
     postgres_db: Annotated[str, Field(alias="POSTGRES_DB")]
 
+    loki_host: Annotated[str, Field(alias="LOKI_HOST")]
+    loki_port: Annotated[str, Field(alias="LOKI_PORT")]
+
     private_key: Annotated[str, Field(alias="PRIVATE_KEY")]
 
     bas_username: Annotated[str, Field(alias="BAS_USERNAME")]
@@ -41,6 +44,11 @@ class Settings(BaseSettings):
                 f"{self.postgres_user}:{self.postgres_password}"
                 f"@{self.postgres_host}:{self.postgres_port}"
                 f"/{self.postgres_db}")
+
+    @computed_field # type: ignore[misc]
+    @property
+    def loki_url(self) -> str:
+        return f"http://{self.loki_host}:{self.loki_port}/loki/api/v1/push"
 
 
 settings = Settings()

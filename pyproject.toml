@@ -4,9 +4,6 @@ version = "0.1.0"
 description = "BAS license checker"
 authors = ["bahladamos <bahladamos@protonmail.com>"]
 readme = "README.md"
-packages = [
-    { include = "scripts" },
-]
 
 [tool.poetry.dependencies]
 python = "^3.13"
@@ -21,6 +18,7 @@ aiohttp-retry = "^2.8.3"
 alembic = "^1.14.0"
 prometheus-fastapi-instrumentator = "^7.0.0"
 loki-logger-handler = "^1.0.2"
+requests = "^2.32.3"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.3"
@@ -39,7 +37,7 @@ build-backend = "poetry.core.masonry.api"
 [tool.pytest.ini_options]
 minversion = "8.0"
 addopts = [
-    "-rA -s -qv",
+    "-rF -s",
 ]
 required_plugins = [
     "pytest-asyncio",
@@ -63,6 +61,10 @@ warn_no_return = "false"
 plugins = [
     "pydantic.mypy",
 ]
+
+[[tool.mypy.overrides]]
+module = "loki_logger_handler.*"
+ignore_missing_imports = true
 
 [tool.ruff]
 target-version = "py313"

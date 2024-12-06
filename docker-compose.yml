@@ -1,112 +1,71 @@
-x-postgres: &default-postgres
-  image: postgres:17-alpine
-  restart: unless-stopped
-  ports:
-    - "5432:5432"
-  volumes:
-    - db-data:/var/lib/postgresql/data
-
-x-prometheus: &default-prometheus
-  image: prom/prometheus:latest
-  restart: unless-stopped
-  ports:
-    - "9090:9090"
-
-x-grafana: &default-grafana
-  image: grafana/grafana-enterprise:latest
-  restart: unless-stopped
-  ports:
-    - "3000:3000"
-  environment: &default-grafana-env
-    GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: "/var/lib/grafana/dashboards/dashboard.json"
-
-x-web: &default-web
-  build: .
-  restart: on-failure
-  command: sh -c "make migrations && make start"
-
 services:
   db:
-    <<: *default-postgres
-    profiles:
-      - production
-
-  db-dev:
-    <<: *default-postgres
+    image: postgres:17-alpine
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
     env_file:
       - .env
-    profiles:
-      - dev
+    volumes:
+      - db-data:/var/lib/postgresql/data
 
   prometheus:
-    <<: *default-prometheus
+    image: prom/prometheus:latest
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
     volumes:
       - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus-data:/prometheus/
-    profiles:
-      - production
 
-  prometheus-dev:
-    <<: *default-prometheus
-    image: prom/prometheus:latest
+  promtail:
+    image: grafana/promtail:2.9.11
     volumes:
-      - ./monitoring/prometheus/dev-prometheus.yml:/etc/prometheus/prometheus.yml
-      - prometheus-data:/prometheus/
-    profiles:
-      - dev
+      - ./monitoring/promtail/config.yml:/etc/promtail/config.yml
+      - /var/log:/var/log
+    command: -config.file=/etc/promtail/config.yml
+
+  loki:
+    image: grafana/loki:3.3.1
+    volumes:
+      - ./monitoring/loki/config.yml:/etc/loki/config.yml
+      - loki-data:/loki
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/config.yml
 
   grafana:
-    <<: *default-grafana
+    image: grafana/grafana-enterprise:latest
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: "/var/lib/grafana/dashboards/dashboard.json"
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD}
     volumes:
       - ./monitoring/grafana/datasource.yml:/etc/grafana/provisioning/datasources/datasource.yml
       - ./monitoring/grafana/dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yml
       - ./monitoring/grafana/dashboard.json:/var/lib/grafana/dashboards/dashboard.json
       - grafana-data:/var/lib/grafana/
-    profiles:
-      - production
-
-  grafana-dev:
-    <<: *default-grafana
-    environment:
-      <<: *default-grafana-env
-      GF_AUTH_ANONYMOUS_ENABLED: "true"
-      GF_AUTH_BASIC_ENABLED: "false"
-      GF_AUTH_ANONYMOUS_ORG_ROLE: "Admin"
-    volumes:
-      - ./monitoring/grafana/dev-datasource.yml:/etc/grafana/provisioning/datasources/datasource.yml
-      - ./monitoring/grafana/dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yml
-      - ./monitoring/grafana/dashboard.json:/var/lib/grafana/dashboards/dashboard.json
-      - grafana-data:/var/lib/grafana/
-    profiles:
-      - dev
 
   web:
-    <<: *default-web
-    ports:
-      - "80:8000"
-    environment:
-      POSTGRES_HOST: "db"
-    depends_on:
-      - db
-      - prometheus
-    profiles:
-      - production
-
-  web-dev:
-    <<: *default-web
+    build: .
+    restart: on-failure
+    command: sh -c "make migrations && make start HOST=0.0.0.0 PORT=8000"
     ports:
       - "8000:8000"
     env_file:
       - .env
     environment:
-      POSTGRES_HOST: "db-dev"
+      POSTGRES_HOST: "db"
     depends_on:
-      - db-dev
-      - prometheus-dev
-    profiles:
-      - dev
+      - db
+      - prometheus
 
 volumes:
   db-data:
   prometheus-data:
+  loki-data:
   grafana-data:

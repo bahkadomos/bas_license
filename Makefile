@@ -13,3 +13,5 @@ keys:
 	python ./scripts/generate_keys.py
 migrations:
 	alembic upgrade head
+save-deps:
+	poetry export --without-hashes --without dev --format requirements.txt > requirements.txt

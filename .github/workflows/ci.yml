@@ -17,6 +17,8 @@ env:
   POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
   POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
   POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+  LOKI_HOST: ${{ secrets.LOKI_HOST }}
+  LOKI_PORT: ${{ secrets.LOKI_PORT }}
   PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
   BAS_USERNAME: ${{ secrets.BAS_USERNAME }}
   BAS_PASSWORD: ${{ secrets.BAS_PASSWORD }}

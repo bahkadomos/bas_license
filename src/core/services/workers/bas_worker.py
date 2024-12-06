@@ -1,4 +1,5 @@
 import asyncio
+from logging import Logger
 from typing import Protocol
 
 from core._types import UUIDv4
@@ -38,14 +39,16 @@ class BasWorker:
         uow: IUnitOfWork,
         http_client: IHTTPClient,
         captcha_client: BaseRecaptchaClient,
+        logger: Logger,
     ) -> None:
         self._auth_client = BasAuthClient(
             http_client=http_client,
             captcha_client=captcha_client,
             username=settings.bas_username,
             password=settings.bas_password,
+            logger=logger,
         )
-        self._api_client = BasAPIClient(http_client)
+        self._api_client = BasAPIClient(http_client, logger)
         self._uow = uow
         self._bas_session: str | None = None
         self._session_lock = asyncio.Lock()
