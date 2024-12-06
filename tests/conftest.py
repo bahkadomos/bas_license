@@ -1,6 +1,7 @@
 from collections.abc import AsyncGenerator, Awaitable, Callable
 from contextlib import asynccontextmanager
 from dataclasses import dataclass
+from logging import Logger
 from typing import Any
 
 import pytest
@@ -23,9 +24,9 @@ from core.services.recaptcha import (
     CapmonsterRecaptchaClient,
 )
 from core.services.uow import IUnitOfWork, UnitOfWork
-from core.utils import RetryAiohttpClient
+from core.utils import RetryAiohttpClient, get_null_logger
 from core.utils.http_client.client import SingleRetryClient
-from v1.dependencies import get_http_client
+from v1.dependencies.http_client import get_http_client
 
 from .helpers import (
     App,
@@ -52,9 +53,12 @@ class AiohttpClient(RetryAiohttpClient):
         self,
         http_client: TestClient,
         client_session: ClientSession,
+        logger: Logger,
     ) -> None:
-        super().__init__(client_session)
-        self._client = SingleRetryClient(client_session=http_client)
+        super().__init__(client_session, logger)
+        self._client = SingleRetryClient(
+            client_session=http_client, logger=logger
+        )
 
     def set_cookie(self, cookies: dict[str, str]) -> None:
         self._client._client.session.cookie_jar.update_cookies(cookies)
@@ -89,12 +93,17 @@ def mock_bas_auth_client(mocker: MockerFixture) -> None:
     )
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="session")
+def logger() -> Logger:
+    return get_null_logger()
+
+
+@pytest.fixture(scope="session")
 def settings() -> Settings:
     return Settings()
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="session")
 def dsn(settings: Settings) -> str:
     return settings.dsn
 
@@ -126,7 +135,7 @@ async def aiohttp_client() -> (
 
 
 @pytest.fixture(scope="module")
-async def app(dsn: str) -> AsyncGenerator[FastAPI, None]:
+async def app(dsn: str, logger: Logger) -> AsyncGenerator[FastAPI, None]:
     from main import create_app
 
     @asynccontextmanager
@@ -136,6 +145,7 @@ async def app(dsn: str) -> AsyncGenerator[FastAPI, None]:
     app = create_app(enable_monitoring=False)
     app.router.lifespan_context = lifespan
     app.state.engine = get_sqlalchemy_engine(dsn, debug=False)
+    app.state.logger = logger
     await create_sqlalchemy_tables(app.state.engine)
 
     yield app
@@ -154,6 +164,7 @@ def context() -> dict:
 def app_client_factory(
     aiohttp_client: Callable[[web.Application], Awaitable[TestClient]],
     app: FastAPI,
+    logger: Logger,
 ) -> Callable[[web.Application], AsyncGenerator[AppClient, None]]:
     """FastAPI test client with test aiohttp session"""
 
@@ -164,7 +175,7 @@ def app_client_factory(
         http_client = await aiohttp_client(web_app)
 
         def get_http_client_override() -> AiohttpClient:
-            return AiohttpClient(http_client, http_client.session)
+            return AiohttpClient(http_client, http_client.session, logger)
 
         app.state.http_session = http_client.session
         app.dependency_overrides[get_http_client] = get_http_client_override
@@ -191,6 +202,7 @@ type CaptchaClientFactory = Callable[
 @pytest.fixture
 def captcha_client_factory(
     aiohttp_client: Callable[[web.Application], Awaitable[TestClient]],
+    logger: Logger,
 ) -> CaptchaClientFactory:
     async def build_client(
         captcha_client: type[BaseRecaptchaClient],
@@ -205,9 +217,9 @@ def captcha_client_factory(
             )
         _aiohttp_client = await aiohttp_client(web_app.app)
         http_client = AiohttpClient(
-            _aiohttp_client, _aiohttp_client.session
+            _aiohttp_client, _aiohttp_client.session, logger
         )
-        return captcha_client(http_client=http_client)
+        return captcha_client(http_client=http_client, logger=logger)
 
     return build_client
 
@@ -221,6 +233,7 @@ type BasAuthFactory = Callable[
 @pytest.fixture
 def bas_auth_factory(
     aiohttp_client: Callable[[web.Application], Awaitable[TestClient]],
+    logger: Logger,
     mocker: MockerFixture,
 ) -> BasAuthFactory:
     mocker.patch.object(
@@ -242,13 +255,14 @@ def bas_auth_factory(
             )
         _aiohttp_client = await aiohttp_client(web_app.app)
         http_client = AiohttpClient(
-            _aiohttp_client, _aiohttp_client.session
+            _aiohttp_client, _aiohttp_client.session, logger
         )
         return BasAuthClient(
             http_client=http_client,
             captcha_client=None,
             username="42",
             password="42",
+            logger=logger,
         )
 
     return build_client
