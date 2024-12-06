@@ -1,8 +1,6 @@
+from collections.abc import Awaitable, Callable
 from logging import Logger
 from typing import Any
-from collections.abc import Awaitable, Callable
-
-from core.enums import LoggerCallerTypes
 
 type _Func[**P, R] = Callable[P, Awaitable[R]]
 
@@ -23,11 +21,7 @@ def exc_wrapper[**P, R](
                     err_msg = e.args[0] if e.args else None
                     if hasattr(self, "logger"):
                         logger: Logger = self.logger
-                        logger.error(
-                            err_msg or func.__name__,
-                            exc_info=e,
-                            extra=dict(type=LoggerCallerTypes.common.value),
-                        )
+                        logger.error(err_msg or func.__name__, exc_info=e)
                 raise exc_out(*exc_args, **exc_kwargs) from e
 
         return wrapper
