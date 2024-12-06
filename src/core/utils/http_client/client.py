@@ -126,8 +126,8 @@ class RetryAiohttpClient:
             extra = dict(caller=LoggerCallerTypes.http_error.value)
             if isinstance(e, ClientResponseError):
                 extra.update(dict(
-                    response_url=response.real_url,
-                    response_status_code=response.status,
+                    response_url=response.real_url.human_repr(),
+                    response_status_code=str(response.status),
                 ))
             self._logger.error("HTTP error", exc_info=e, extra=dict(
                 method=method,
