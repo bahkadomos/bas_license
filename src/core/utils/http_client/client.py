@@ -124,7 +124,7 @@ class RetryAiohttpClient:
                     return TextHTTPResponse(data=data, **response_data)
         except ClientError as e:
             extra = dict(caller=LoggerCallerTypes.http_error.value)
-            if issubclass(e, ClientResponseError):
+            if isinstance(e, ClientResponseError):
                 extra.update(
                     response_url=response.real_url,
                     response_status_code=response.status,
