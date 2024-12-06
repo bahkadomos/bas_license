@@ -37,7 +37,7 @@ build-backend = "poetry.core.masonry.api"
 [tool.pytest.ini_options]
 minversion = "8.0"
 addopts = [
-    "-rA -s -qv",
+    "-rF -s",
 ]
 required_plugins = [
     "pytest-asyncio",
