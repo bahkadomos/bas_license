@@ -1,8 +1,0 @@
-global:
-  scrape_interval: 5s
-  evaluation_interval: 5s
-
-scrape_configs:
-  - job_name: "bas-license"
-    static_configs:
-      - targets: ["web-dev:8000"]
