@@ -38,7 +38,7 @@ class TaskUseCase:
         bas_client: IBasWorker,
     ) -> CreateLicenseTaskOutSchema:
         async with self._uow as uow:
-            user_id = await self._uow.users.create_one(user.username)
+            user_id = await uow.users.create_one(user.username)
             script_id = await uow.scripts.create_one(user.script_name)
             user_script_id = await uow.users_scripts.create_one(
                 user_id=user_id, script_id=script_id
