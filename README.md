@@ -65,7 +65,7 @@ BAS License Checker addresses this issue by introducing real-time license valida
 
    This will start the following services:
    - **API Server**: Available at `http://localhost:8000`.
-   - **Grafana**: Available at `http://localhost:3000` (default credentials: `admin` / `admin`).
+   - **Grafana**: Available at `http://localhost:3000` (default credentials: `admin` / `.env: GRAFANA_PASSWORD`).
    - **Loki**: Integrated for logging (no direct UI, logs are accessible via Grafana).
    - **PostgreSQL**: Database backend.
 
