@@ -241,11 +241,15 @@ Use this function to validate API responses securely.
 
 ## Testing
 
+**Prerequisites**:
+- python 3.13 and above;
+- `docker` and `docker-compose`.
+
 Create local environment and install the dependencies (see [Installation](#installation) section).
 
 Run necessary services using docker compose:
 ```bash
-docker compose up
+docker compose up --build
 ```
 
 Run tests locally using `pytest`:
