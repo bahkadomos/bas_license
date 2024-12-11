@@ -82,7 +82,7 @@ BAS License Checker addresses this issue by introducing real-time license valida
      ```
    - Add the generated private key to the `.env` file as:
      ```
-     PRIVATE_KEY=<path-to-private-key>
+     PRIVATE_KEY=<YOUR-BASE64-PRIVATE-KEY>
      ```
 
 4. **Start Services**:
