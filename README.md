@@ -4,6 +4,31 @@ BAS License Checker is an API designed to provide real-time license validation f
 
 ---
 
+## Table of Contents
+
+1. [Motivation](#motivation)
+2. [Features](#features)
+3. [Prerequisites](#prerequisites)
+4. [Installation](#installation)
+   - [Clone the Repository](#clone-the-repository)
+   - [Set Up Environment](#set-up-environment)
+   - [Generate Keys](#generate-keys)
+   - [Start Services](#start-services)
+   - [Access Services](#access-services)
+5. [Usage](#usage)
+   - [API Endpoints](#api-endpoints)
+     - [Create Task](#create-task)
+     - [Get Task Result](#get-task-result)
+   - [Security](#security)
+     - [Replay Attack Prevention](#replay-attack-prevention)
+     - [Example: Validating Responses in Node.js](#example-validating-responses-in-nodejs)
+6. [Testing](#testing)
+7. [Contributing](#contributing)
+8. [License](#license)
+9. [Acknowledgments](#acknowledgments)
+
+---
+
 ## Motivation
 
 Native BAS license server validate licenses only at script startup. If a license expires during the script's execution, the system cannot verify it until the script restarts. This gap allows for prolonged use of expired licenses, posing challenges for license enforcement.
@@ -262,4 +287,3 @@ This project is licensed under the MIT License. See the `LICENSE` file for detai
 
 - Developed by [bahladamos](mailto:bahladamos@protonmail.com).
 - Powered by [FastAPI](https://fastapi.tiangolo.com/) and [SQLAlchemy](https://www.sqlalchemy.org/).
-
