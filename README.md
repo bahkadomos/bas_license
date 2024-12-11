@@ -227,12 +227,12 @@ Use this function to validate API responses securely.
 
 Create local environment and install the dependencies (see [Installation](#installation) section).
 
-Run migrations:
+Run necessary services using docker compose:
 ```bash
-make migrations
+docker compose up
 ```
 
-Run tests using `pytest`:
+Run tests locally using `pytest`:
 
 ```bash
 make test
