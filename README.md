@@ -183,6 +183,7 @@ To prevent spoofing the server or replay attacks, the API utilizes a signing mec
 #### Replay Attack Prevention
 
 Each response contains a `server_info` mapping with an unique `request_id` (UUID) and `created_at` (ISO datetime):
+
     - `request_id` is used to make each body and their hashes unique;
     - `created_at` is used to compare server's request and current client datetime.
 
