@@ -56,8 +56,9 @@ BAS License Checker addresses this issue by introducing real-time license valida
      ```
      Alternatively, install only the necessary modules:
      ```bash
-     pip install cryptography==43.0.3 # check the current version in requirements.txt
+     pip install cryptography==43.0.3
      ```
+     Check the current version of the package in requirements.txt.
 
    - **Generate the keys**:
      ```bash
