@@ -187,8 +187,8 @@ Each response contains a `server_info` mapping with an unique `request_id` (UUID
     - `created_at` is used to compare server's request and current client datetime.
 
 The client should verify:
-  - `X-Signature` matches the signed body.
-  - The `created_at` timestamp is within an acceptable range (e.g., less than 1 hour old).
+    - `X-Signature` matches the signed body.
+    - The `created_at` timestamp is within an acceptable range (e.g., less than 1 hour old).
 
 #### Example: Validating Responses in Node.js
 
