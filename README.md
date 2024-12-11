@@ -86,7 +86,7 @@ BAS License Checker addresses this issue by introducing real-time license valida
 4. **Start Services**:
     - Using Docker Compose:
         ```bash
-        docker-compose up --build
+        docker compose up --build
         ```
 
     This will start the following services:
