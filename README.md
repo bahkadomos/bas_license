@@ -263,9 +263,9 @@ make test
 
 1. Fork the repository.
 2. Create a new branch for your feature or bugfix:
-   ```bash
-   git checkout -b feature-name
-   ```
+    ```bash
+    git checkout -b feature-name
+    ```
 3. Commit your changes and push to your branch.
 4. Create a pull request.
 
