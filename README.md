@@ -211,11 +211,15 @@ Use this function to validate API responses securely.
 ---
 
 ## Testing
+Run migrations:
+```bash
+make migrations
+```
 
 Run tests using `pytest`:
 
 ```bash
-pytest
+make test
 ```
 
 ---
@@ -241,5 +245,4 @@ This project is licensed under the MIT License. See the `LICENSE` file for detai
 ## Acknowledgments
 
 - Developed by [bahladamos](mailto:bahladamos@protonmail.com).
-- Powered by FastAPI and SQLAlchemy.
-
+- Powered by [FastAPI](https://fastapi.tiangolo.com/) and [SQLAlchemy](https://www.sqlalchemy.org/).
