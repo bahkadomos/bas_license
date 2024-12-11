@@ -1,0 +1,38 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create .env
+        uses: SpicyPizza/create-envfile@v2.0
+        with:
+          envkey_DEBUG: false
+          envkey_POSTGRES_HOST: localhost
+          envkey_POSTGRES_PORT: 5432
+          envkey_POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          envkey_POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          envkey_POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+          envkey_LOKI_HOST: ${{ secrets.LOKI_HOST }}
+          envkey_LOKI_PORT: ${{ secrets.LOKI_PORT }}
+          envkey_GRAFANA_PASSWORD: ${{ secrets.GRAFANA_PASSWORD }}
+          envkey_PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+          envkey_BAS_USERNAME: ${{ secrets.BAS_USERNAME }}
+          envkey_BAS_PASSWORD: ${{ secrets.BAS_PASSWORD }}
+          envkey_CAPGURU_KEY: ${{ secrets.CAPGURU_KEY }}
+          envkey_CAPMONSTER_KEY: ${{ secrets.CAPMONSTER_KEY }}
+          fail_on_empty: true
+
+      - name: Setup docker
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and start containers
+        run: |
+          docker compose down
+          docker compose up --build -d
