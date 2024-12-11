@@ -34,7 +34,7 @@ BAS License Checker addresses this issue by introducing real-time license valida
 
    ```bash
    git clone https://github.com/bahkadomos/bas_license.git
-   cd bas-license-checker
+   cd bas_license
    ```
 
 2. **Set Up Environment**:
