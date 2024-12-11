@@ -47,7 +47,19 @@ BAS License Checker addresses this issue by introducing real-time license valida
 
 3. **Generate Keys**:
 
-   - Run the following command to generate a private and public key pair:
+   - **Set up local dependencies**:
+     Create a virtual environment and install required dependencies for key generation:
+     ```bash
+     python -m venv .venv
+     source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+     pip install -r requirements.txt
+     ```
+     Alternatively, install only the necessary modules:
+     ```bash
+     pip install cryptography==43.0.3 # check the current version in requirements.txt
+     ```
+
+   - **Generate the keys**:
      ```bash
      make keys
      ```
@@ -211,6 +223,7 @@ Use this function to validate API responses securely.
 ---
 
 ## Testing
+
 Run migrations:
 ```bash
 make migrations
@@ -246,3 +259,4 @@ This project is licensed under the MIT License. See the `LICENSE` file for detai
 
 - Developed by [bahladamos](mailto:bahladamos@protonmail.com).
 - Powered by [FastAPI](https://fastapi.tiangolo.com/) and [SQLAlchemy](https://www.sqlalchemy.org/).
+
