@@ -47,63 +47,59 @@ BAS License Checker addresses this issue by introducing real-time license valida
 ## Installation
 
 1. **Clone the Repository**:
-
-   ```bash
-   git clone https://github.com/bahkadomos/bas_license.git
-   cd bas_license
-   ```
+    ```bash
+    git clone https://github.com/bahkadomos/bas_license.git
+    cd bas_license
+    ```
 
 2. **Set Up Environment**:
-
-   - Copy the example `.env` file:
-     ```bash
-     cp .env.example .env
-     ```
-   - Update the `.env` file with your configuration (e.g., database credentials, grafana password, etc.).
+    - Copy the example `.env` file:
+        ```bash
+        cp .env.example .env
+        ```
+    - Update the `.env` file with your configuration (e.g., database credentials, grafana password, etc.).
 
 3. **Generate Keys**:
+    - **Set up local dependencies**:
+        Create a virtual environment and install required dependencies for key generation:
+        ```bash
+        python -m venv .venv
+        source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+        pip install -r requirements.txt
+        ```
+        Alternatively, install only the necessary modules:
+        ```bash
+        pip install cryptography==43.0.3
+        ```
+        Check the current version of the package in `requirements.txt`.
 
-   - **Set up local dependencies**:
-     Create a virtual environment and install required dependencies for key generation:
-     ```bash
-     python -m venv .venv
-     source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-     pip install -r requirements.txt
-     ```
-     Alternatively, install only the necessary modules:
-     ```bash
-     pip install cryptography==43.0.3
-     ```
-     Check the current version of the package in `requirements.txt`.
-
-   - **Generate the keys**:
-     ```bash
-     make keys
-     ```
-   - Add the generated private key to the `.env` file as:
-     ```
-     PRIVATE_KEY=<YOUR-BASE64-PRIVATE-KEY>
-     ```
+    - **Generate the keys**:
+        ```bash
+        make keys
+        ```
+    - Add the generated private key to the `.env` file as:
+        ```
+        PRIVATE_KEY=<YOUR-BASE64-PRIVATE-KEY>
+        ```
+    - Save both keys and keep them securely!
 
 4. **Start Services**:
+    - Using Docker Compose:
+        ```bash
+        docker-compose up --build
+        ```
 
-   - Using Docker Compose:
-     ```bash
-     docker-compose up --build
-     ```
-
-   This will start the following services:
-   - **API Server**: Available at `http://localhost:8000`.
-   - **Grafana**: Available at `http://localhost:3000` (default credentials: `admin` / `.env: GRAFANA_PASSWORD`).
-   - **Loki**: Integrated for logging (no direct UI, logs are accessible via Grafana).
-   - **PostgreSQL**: Database backend.
+    This will start the following services:
+    - **API Server**: Available at `http://localhost:8000`.
+    - **Grafana**: Available at `http://localhost:3000` (default credentials: `admin` / `.env: GRAFANA_PASSWORD`).
+    - **Loki**: Integrated for logging (no direct UI, logs are accessible via Grafana).
+    - **PostgreSQL**: Database backend.
 
 5. **Access Services**:
-
-   - **API Documentation**:
-     Navigate to `http://localhost:8000/docs` for interactive API documentation.
-   - **Grafana Dashboards**:
-     Visit `http://localhost:3000` to monitor metrics and logs.
+    - **API Documentation**:
+        Navigate to `http://localhost:8000/docs` for interactive API documentation.
+    - **Grafana Dashboards**:
+        Visit `http://localhost:3000` to monitor metrics and logs.
 
 ---
 
@@ -113,70 +109,70 @@ BAS License Checker addresses this issue by introducing real-time license valida
 
 1. **Create Task**:
 
-   ```http
-   POST /v1/license
-   ```
+    ```http
+    POST /v1/license
+    ```
 
-   **Request Body**:
+    **Request Body**:
 
-   ```json
-   {
-       "username": "string",
-       "script_name": "string"
-   }
-   ```
+    ```json
+    {
+        "username": "string",
+        "script_name": "string"
+    }
+    ```
 
-   **Response**:
+    **Response**:
 
-   ```json
-   {
-       "error": false,
-       "data": {
-           "task_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-           "credentials": {
-               "username": "string",
-               "script_name": "string"
-           }
-       },
-       "server_info": {
-           "request_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-           "created_at": "2024-12-11T15:45:06.793Z"
-       }
-   }
-   ```
+    ```json
+    {
+        "error": false,
+        "data": {
+            "task_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "credentials": {
+                "username": "string",
+                "script_name": "string"
+            }
+        },
+        "server_info": {
+            "request_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "created_at": "2024-12-11T15:45:06.793Z"
+        }
+    }
+    ```
 
 2. **Get Task Result**:
 
-   ```http
-   POST /v1/license/result
-   ```
+    ```http
+    POST /v1/license/result
+    ```
 
-   **Request Body**:
+    **Request Body**:
 
-   ```json
-   {
-       "task_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
-   }
-   ```
+    ```json
+    {
+        "task_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    }
+    ```
 
-   **Response**:
+    **Response**:
 
-   ```json
-   {
-       "error": false,
-       "data": {
-           "status": "ok",
-           "credentials": {
-               "is_expired": true,
-               "expires_in": "2024-12-11T15:46:22.282Z"
-           }
-       },
-       "server_info": {
-           "request_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-           "created_at": "2024-12-11T15:46:22.282Z"
-       }
-   }
-   ```
+    ```json
+    {
+        "error": false,
+        "data": {
+            "status": "ok",
+            "credentials": {
+                "is_expired": true,
+                "expires_in": "2024-12-11T15:46:22.282Z"
+            }
+        },
+        "server_info": {
+            "request_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "created_at": "2024-12-11T15:46:22.282Z"
+        }
+    }
+    ```
 
 See more detailed swagger documentation here: `http://localhost:8000/docs/`.
 
