@@ -149,7 +149,7 @@ BAS License Checker addresses this issue by introducing real-time license valida
    }
    ```
 
-See more detailed swagger documentation here: `http://127.0.0.1:8000/docs/`.
+See more detailed swagger documentation here: `http://localhost:8000/docs/`.
 
 ### Security
 
