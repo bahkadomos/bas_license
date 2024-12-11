@@ -225,6 +225,8 @@ Use this function to validate API responses securely.
 
 ## Testing
 
+Create local environment and install the dependencies (see [Installation](#installation) section).
+
 Run migrations:
 ```bash
 make migrations
