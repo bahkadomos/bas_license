@@ -222,6 +222,8 @@ function verifySignature(body, signature, publicKey) {
 }
 ```
 
+See more [examples](examples).
+
 ---
 
 ## Testing
