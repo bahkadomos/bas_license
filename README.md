@@ -233,20 +233,20 @@ See more [examples](examples).
 - `docker` and `docker-compose`;
 - [poetry](https://python-poetry.org/docs/#installation).
 
-- Create local environment (see [Installation](#installation) section).
+1. Create local environment (see [Installation](#installation) section).
 
-- Install all dependencies (including dev) via `poetry`:
+2. Install all dependencies (including dev) via `poetry`:
     ```bash
     poetry install
     ```
 
-- Run necessary services using `docker compose`:
+3. Run necessary services using `docker compose`:
     ```bash
     docker compose up --build
     ```
     or run only necessary containers, like postgres.
 
-- Run tests locally using `pytest`:
+4. Run tests locally using `pytest`:
     ```bash
     make test
     ```
