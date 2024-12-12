@@ -33,10 +33,9 @@ class EncryptionMixin:
         hash_digest: bytes,
         *,
         padding_: AsymmetricPadding | None = None,
-        algorithm: Prehashed | hashes.HashAlgorithm | None = None,
     ) -> bytes:
         return private_key.sign(
             hash_digest,
             padding_ or padding.PKCS1v15(),
-            algorithm or hashes.SHA256(),
+            Prehashed(hashes.SHA256()),
         )
