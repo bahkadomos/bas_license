@@ -198,43 +198,29 @@ Install necessary libraries:
 npm install crypto
 ```
 
-Code example:
+You can verify signature with the following example (Node.js):
 
 ```javascript
-const crypto = require('crypto');
+const crypto = require("crypto");
 
-function validateResponse(response, publicKey) {
-    const { data, server_info } = response;
-    const signature = response.headers['x-signature'];
+function verifySignature(body, signature, publicKey) {
+    const b64decode = data => Buffer.from(data, "base64");
+    const publicKeyString = b64decode(publicKey).toString("utf-8");
 
-    // Reconstruct the signed payload
-    const payload = JSON.stringify({ data, server_info });
-
-    // Verify the signature
-    const isValid = crypto.verify(
-        'sha256',
-        Buffer.from(payload),
-        publicKey,
-        Buffer.from(signature, 'base64')
+    const digest = crypto.createHash("sha256").update(Buffer.from(body)).digest();
+    const isVerified = crypto.verify(
+        "sha256",
+        digest,
+        {
+            key: publicKeyString,
+            padding: crypto.constants.RSA_PKCS1_PADDING,
+        },
+        b64decode(signature),
     );
 
-    if (!isValid) {
-        throw new Error('Invalid signature');
-    }
-
-    // Check timestamp freshness
-    const createdAt = new Date(server_info.created_at);
-    const now = new Date();
-
-    if (Math.abs(now - createdAt) > 3600000) { // 1 hour in milliseconds
-        throw new Error('Response timestamp is too old');
-    }
-
-    console.log('Response is valid');
+    return isVerified;
 }
 ```
-
-Use this function to validate API responses securely.
 
 ---
 
