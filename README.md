@@ -110,7 +110,7 @@ BAS License Checker addresses this issue by introducing real-time license valida
 1. **Create Task**:
 
     ```http
-    POST /v1/license
+    POST /v1/license/
     ```
 
     **Request Body**:
@@ -144,7 +144,7 @@ BAS License Checker addresses this issue by introducing real-time license valida
 2. **Get Task Result**:
 
     ```http
-    POST /v1/license/result
+    POST /v1/license/result/
     ```
 
     **Request Body**:
