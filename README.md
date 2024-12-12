@@ -57,7 +57,7 @@ BAS License Checker addresses this issue by introducing real-time license valida
         ```bash
         cp .env.example .env
         ```
-    - Update the `.env` file with your configuration (e.g., database credentials, grafana password, etc.).
+    - Update the `.env` file with your configuration (e.g., database credentials, grafana password, API keys for captcha services etc.).
 
 3. **Generate Keys**:
     - **Set up local dependencies**:
