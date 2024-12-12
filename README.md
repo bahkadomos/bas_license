@@ -222,26 +222,34 @@ function verifySignature(body, signature, publicKey) {
 }
 ```
 
+See more [examples](examples).
+
 ---
 
 ## Testing
 
 **Prerequisites**:
-- `python 3.13.0` and above;
-- `docker` and `docker-compose`.
+- `python 3.13.0` or above;
+- `docker` and `docker-compose`;
+- [poetry](https://python-poetry.org/docs/#installation).
 
-Create local environment and install the dependencies (see [Installation](#installation) section).
+1. Create local environment (see [Installation](#installation) section).
 
-Run necessary services using `docker compose`:
-```bash
-docker compose up --build
-```
+2. Install all dependencies (including dev) via `poetry`:
+    ```bash
+    poetry install
+    ```
 
-Run tests locally using `pytest`:
+3. Run necessary services using `docker compose`:
+    ```bash
+    docker compose up --build
+    ```
+    or run only necessary containers, like postgres.
 
-```bash
-make test
-```
+4. Run tests locally using `pytest`:
+    ```bash
+    make test
+    ```
 
 ---
 
