@@ -190,39 +190,7 @@ The client should verify:
 - `X-Signature` matches the signed body.
 - The `created_at` timestamp is within an acceptable range (e.g., less than 1 hour old).
 
-#### Example: Validating Responses in Node.js
-
-Install necessary libraries:
-
-```bash
-npm install crypto
-```
-
-You can verify signature with the following example (Node.js):
-
-```javascript
-const crypto = require("crypto");
-
-function verifySignature(body, signature, publicKey) {
-    const b64decode = data => Buffer.from(data, "base64");
-    const publicKeyString = b64decode(publicKey).toString("utf-8");
-
-    const digest = crypto.createHash("sha256").update(Buffer.from(body)).digest();
-    const isVerified = crypto.verify(
-        "sha256",
-        digest,
-        {
-            key: publicKeyString,
-            padding: crypto.constants.RSA_PKCS1_PADDING,
-        },
-        b64decode(signature),
-    );
-
-    return isVerified;
-}
-```
-
-See more [examples](examples).
+See [examples](examples).
 
 ---
 
