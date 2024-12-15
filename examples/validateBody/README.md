@@ -1,9 +1,9 @@
 # Example: Response Body Validation
 
 This code validates server's response. It checks:
-    - the keys `server_info.request_id` and `server_info.created_at` exist;
-    - `server_info.created_at` value is in acceptable range;
-    - `server_info.request_id` value is a match to UUID v4 syntax.
+- the keys `server_info.request_id` and `server_info.created_at` exist;
+- `server_info.created_at` value is in acceptable range;
+- `server_info.request_id` value is a match to UUID v4 syntax.
 
 ## Usage
 1. Create BAS function named `validateBody` and checked `return` value (`Has return value: yes`). The function should accept the following arguments:
