@@ -17,4 +17,4 @@ This code validates server's response. It checks:
     - `body` -> `[[BODY]]`;
     - `dateDifference` -> `[[DATE_DIFFERENCE]]`.
 3. Create an `Execute code` action and insert the code from [validateBody.js](validateBody.js).
-4. Call `validateBody` function with received `body`, from server's response and `dateDifference` string. The obtained result will be a boolean type (`true` - server's response is valid, `false` - not valid).
+4. Call `validateBody` function with received `body` from server's response and `dateDifference` string. The obtained result will be a boolean type (`true` - server's response is valid, `false` - not valid).
