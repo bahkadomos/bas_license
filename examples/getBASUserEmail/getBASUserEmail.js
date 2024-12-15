@@ -1,17 +1,3 @@
-/*
-1. Create function named "getBasUserEmail" with returned value.
-This function returns user's email if found, otherwise `null`
-when running in compiled script.
-2. Make sure Path module is installed.
-Create action `Path` -> `Path to project directory` with returned value as `PROJECT_DIRECTORY`
-3. Place this code to `Execute code` action inside this function.
-
-Conclusion: your function "getBasUserEmail" should include 2 actions:
-- path to project directory that returns `PROJECT_DIRECTORY` variable;
-- `Execute code` action with the following code.
-*/
-
-
 native_async(
     "filesystem",
     "search",
