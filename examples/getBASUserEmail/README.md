@@ -1,4 +1,5 @@
 # Example: Get BAS User Email
+
 This code allows you to automatically obtain the user's email from the BAS script.
 
 ## Usage
