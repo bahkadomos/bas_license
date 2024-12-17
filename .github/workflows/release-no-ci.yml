@@ -1,0 +1,25 @@
+name: Release without CI
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - "src/**"
+      - "tests/**"
+      - "poetry.lock"
+      - "pyproject.toml"
+      - "Makefile"
+
+jobs:
+  update_release_without_ci:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run Release Drafter
+        uses: release-drafter/release-drafter@v6
+        with:
+          config-name: release-drafter.yml
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
