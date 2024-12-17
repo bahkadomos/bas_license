@@ -20,7 +20,7 @@ categories:
   - title: "🏗️ Build"
     labels: ["build"]
   - title: "🔌 CI"
-    labels: ["ci"]
+    labels: ["ops"]
   - title: "⚠️ Breaking Changes"
     labels: ["breaking"]
 change-template: "- $TITLE @$AUTHOR"
