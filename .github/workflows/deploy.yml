@@ -2,18 +2,27 @@ name: Deploy
 
 on:
   release:
-    types: [published]
+    types:
+      - published
   workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: self-hosted
+    permissions:
+      contents: read
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: Filter paths
         id: changes
         uses: dorny/paths-filter@v3
         with:
+          token: ${{ secrets.GITHUB_TOKEN }}
           filters: |
             docker:
               - '/alembic/**'
@@ -25,10 +34,6 @@ jobs:
               - 'requirements.txt'
               - 'Dockerfile'
               - 'Makefile'
-
-      - name: Checkout repository
-        if: steps.changes.outputs.docker == 'true'
-        uses: actions/checkout@v4
 
       - name: Create .env
         if: steps.changes.outputs.docker == 'true'
