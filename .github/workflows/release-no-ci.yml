@@ -15,6 +15,7 @@ jobs:
   update_release_without_ci:
     permissions:
       contents: write
+      pull-requests: read
     runs-on: ubuntu-latest
     steps:
       - name: Run Release Drafter
