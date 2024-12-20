@@ -1,31 +1,42 @@
-name-template: "v$NEXT_VERSION"
-tag-template: "v$NEXT_VERSION"
+name-template: "v$RESOLVED_VERSION"
+tag-template: "v$RESOLVED_VERSION"
 categories:
   - title: "🚀 Features"
-    labels: ["feat"]
+    labels:
+    - feat
   - title: "🐛 Bug Fixes"
-    labels: ["fix"]
+    labels:
+      - fix
   - title: "🔧 Chores"
-    labels: ["chore"]
+    labels:
+      - chore
   - title: "♻️ Refactoring"
-    labels: ["refactor"]
+    labels:
+      - refactor
   - title: "⚡ Performance"
-    labels: ["perf"]
+    labels:
+      - perf
   - title: "📚 Documentation"
-    labels: ["docs"]
+    labels:
+      - docs
   - title: "🎨 Style"
-    labels: ["style"]
+    labels: 
+      - style
   - title: "🧪 Tests"
-    labels: ["test"]
+    labels:
+      - test
   - title: "🏗️ Build"
-    labels: ["build"]
+    labels:
+      - build
   - title: "🔌 CI"
-    labels: ["ops"]
+    labels:
+      - ops
   - title: "⚠️ Breaking Changes"
-    labels: ["breaking"]
-change-template: "- $TITLE @$AUTHOR"
+    labels:
+      - breaking
+change-template: "- $TITLE @$AUTHOR (#$NUMBER)"
 no-changes-template: "- No changes"
 template: |
-  ## What"s Changed
+  ## What's Changed
 
   $CHANGES
