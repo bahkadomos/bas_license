@@ -7,7 +7,6 @@ from .exceptions import (
     BasPremiumExpiredError,
     BasRecaptchaSolvedWrongError,
 )
-from .schemas import LicenseResponseResultSchema
 
 __all__ = [
     "BasAuthError",
@@ -18,5 +17,4 @@ __all__ = [
     "BasParseSiteKeyError",
     "BasPremiumExpiredError",
     "BasRecaptchaSolvedWrongError",
-    "LicenseResponseResultSchema",
 ]

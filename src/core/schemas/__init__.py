@@ -8,6 +8,7 @@ from .schemas import (
     TaskLicenseResultInSchema,
     TaskLicenseResultOutSchema,
 )
+from .wrappers import LicenceTaskUseCaseOut
 
 __all__ = [
     "ErrorDetailsSchema",
@@ -16,6 +17,7 @@ __all__ = [
     "CreateLicenseTaskOutSchema",
     "LicenseDetailsSchema",
     "LicenseResultStatus",
+    "LicenceTaskUseCaseOut",
     "TaskLicenseResultInSchema",
     "TaskLicenseResultOutSchema",
     "TaskNotFoundSchema",
