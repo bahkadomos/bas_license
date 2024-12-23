@@ -8,6 +8,8 @@ on:
       - "poetry.lock"
       - "pyproject.toml"
       - "Makefile"
+    tags-ignore:
+      - '**'
   workflow_dispatch:
 
 env:
