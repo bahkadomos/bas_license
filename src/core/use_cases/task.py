@@ -1,15 +1,15 @@
 from typing import Protocol
 from fastapi import BackgroundTasks
 
-from .schemas import (
+from core.schemas import (
     CreateLicenseTaskInSchema,
     CreateLicenseTaskOutSchema,
     LicenseDetailsSchema,
     TaskLicenseResultInSchema,
     TaskLicenseResultOutSchema,
 )
-from .services.uow import IUnitOfWork
-from .services.workers import IBasWorker
+from core.services.uow import IUnitOfWork
+from core.services.workers import IBasWorker
 
 
 class ITaskUseCase(Protocol):

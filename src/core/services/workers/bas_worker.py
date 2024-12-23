@@ -8,10 +8,10 @@ from core.enums import LicenseResultStatus
 from core.services.bas import (
     BasAPIClient,
     BasAuthClient,
-    LicenseResponseResultSchema,
 )
+from core.services.bas.schemas import LicenseResponseResultSchema
 from core.services.recaptcha import BaseRecaptchaClient
-from core.services.uow import IUnitOfWork
+from core.use_cases import IBASSessionUseCase, ILicenseUseCase
 from core.utils import IHTTPClient
 
 
@@ -19,7 +19,8 @@ class IBasWorker(Protocol):
     def __init__(
         self,
         *,
-        uow: IUnitOfWork,
+        bas_session_use_case: IBASSessionUseCase,
+        license_use_case: ILicenseUseCase,
         http_client: IHTTPClient,
         captcha_client: BaseRecaptchaClient,
         logger: Logger,
@@ -36,7 +37,8 @@ class BasWorker:
     def __init__(
         self,
         *,
-        uow: IUnitOfWork,
+        bas_session_use_case: IBASSessionUseCase,
+        license_use_case: ILicenseUseCase,
         http_client: IHTTPClient,
         captcha_client: BaseRecaptchaClient,
         logger: Logger,
@@ -48,8 +50,9 @@ class BasWorker:
             password=settings.bas_password,
             logger=logger,
         )
+        self._license_use_case = license_use_case
+        self._bas_session_use_case = bas_session_use_case
         self._api_client = BasAPIClient(http_client, logger)
-        self._uow = uow
         self._bas_session: str | None = None
         self._session_lock = asyncio.Lock()
 
@@ -57,22 +60,10 @@ class BasWorker:
         self, task_data_id: UUIDv4, user: str, script: str
     ) -> None:
         if self._bas_session is None:
-            self._bas_session = await self._get_storage_session()
+            self._bas_session = await self._bas_session_use_case.get_session()
             await self._ensure_session_update()
         license_data = await self._get_license_data(user, script)
         await self._save_license_data(task_data_id, license_data)
-
-    async def _get_storage_session(self) -> str | None:
-        async with self._uow:
-            session = await self._uow.sessions.read_one()
-            await self._uow.commit()
-        return session
-
-    async def _set_storage_session(self) -> None:
-        if self._bas_session:
-            async with self._uow:
-                await self._uow.sessions.create_one(self._bas_session)
-                await self._uow.commit()
 
     def _set_bas_session(self) -> None:
         if self._bas_session:
@@ -104,7 +95,8 @@ class BasWorker:
 
     async def _update_session(self) -> None:
         self._bas_session = await self._auth_client.get_session_cookie()
-        await self._set_storage_session()
+        if self._bas_session:
+            await self._bas_session_use_case.set_session(self._bas_session)
         self._set_bas_session()
 
     async def _save_license_data(
@@ -112,11 +104,9 @@ class BasWorker:
     ) -> None:
         expires_in = data.credentials.expires_in if data.credentials else None
         is_expired = data.credentials.is_expired if data.credentials else None
-        async with self._uow:
-            await self._uow.license_tasks_data.add_task_data(
-                task_data_id,
-                status=data.status,
-                expires_in=expires_in,
-                is_expired=is_expired,
-            )
-            await self._uow.commit()
+        await self._license_use_case.set_license_data(
+            task_data_id,
+            status=data.status,
+            expires_in=expires_in,
+            is_expired=is_expired,
+        )
