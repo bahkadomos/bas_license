@@ -7,12 +7,12 @@ from core.services.workers import BasWorker, IBasWorker
 from .captcha import CaptchaClientDependency
 from .http_client import HTTPClentDependency
 from .logger import LoggerDependency
-from .use_cases import IBASSessionUseCase, ILicenseUseCase
+from .use_cases import BASSessionUseCaseDependency, LicenseUseCaseDependency
 
 
 async def get_bas_worker(
-    bas_session_use_case: IBASSessionUseCase,
-    license_use_case: ILicenseUseCase,
+    bas_session_use_case: BASSessionUseCaseDependency,
+    license_use_case: LicenseUseCaseDependency,
     http_client: HTTPClentDependency,
     captcha_client: CaptchaClientDependency,
     logger: LoggerDependency,

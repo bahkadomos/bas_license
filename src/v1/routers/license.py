@@ -23,12 +23,11 @@ async def create_task(
     bas_client: BasWorkerDependency,
     task_use_case: TaskUseCaseDependency,
 ) -> SuccessResponse[CreateLicenseTaskOutSchema]:
-    data = await task_use_case.create_task(
-        background_tasks=background_tasks,
-        user=user,
-        bas_client=bas_client,
+    data = await task_use_case.create_task(user=user)
+    background_tasks.add_task(
+        bas_client, data.task_data_id, user.username, user.script_name
     )
-    return SuccessResponse(data=data)
+    return SuccessResponse(data=data.response_data)
 
 
 @router.post(

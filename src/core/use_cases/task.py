@@ -1,15 +1,14 @@
 from typing import Protocol
-from fastapi import BackgroundTasks
 
 from core.schemas import (
     CreateLicenseTaskInSchema,
     CreateLicenseTaskOutSchema,
+    LicenceTaskUseCaseOut,
     LicenseDetailsSchema,
     TaskLicenseResultInSchema,
     TaskLicenseResultOutSchema,
 )
 from core.services.uow import IUnitOfWork
-from core.services.workers import IBasWorker
 
 
 class ITaskUseCase(Protocol):
@@ -17,10 +16,8 @@ class ITaskUseCase(Protocol):
 
     async def create_task(
         self,
-        background_tasks: BackgroundTasks,
         user: CreateLicenseTaskInSchema,
-        bas_client: IBasWorker,
-    ) -> CreateLicenseTaskOutSchema: ...
+    ) -> LicenceTaskUseCaseOut: ...
 
     async def get_task_result(
         self, task: TaskLicenseResultInSchema
@@ -33,10 +30,8 @@ class TaskUseCase:
 
     async def create_task(
         self,
-        background_tasks: BackgroundTasks,
         user: CreateLicenseTaskInSchema,
-        bas_client: IBasWorker,
-    ) -> CreateLicenseTaskOutSchema:
+    ) -> LicenceTaskUseCaseOut:
         async with self._uow as uow:
             user_id = await uow.users.create_one(user.username)
             script_id = await uow.scripts.create_one(user.script_name)
@@ -48,10 +43,12 @@ class TaskUseCase:
                 task_data_id=task_data_id, user_script_id=user_script_id
             )
             await uow.commit()
-        background_tasks.add_task(
-            bas_client, task_data_id, user.username, user.script_name
+        return LicenceTaskUseCaseOut(
+            response_data=CreateLicenseTaskOutSchema(
+                task_id=task_id, credentials=user
+            ),
+            task_data_id=task_data_id,
         )
-        return CreateLicenseTaskOutSchema(task_id=task_id, credentials=user)
 
     async def get_task_result(
         self, task: TaskLicenseResultInSchema

@@ -25,9 +25,9 @@ class LicenseUseCase:
 
     async def set_license_data(
         self,
-        status: LicenseResultStatus,
-        *,
         task_data_id: UUIDv4,
+        *,
+        status: LicenseResultStatus,
         expires_in: datetime | None = None,
         is_expired: bool | None = None,
     ) -> None:
