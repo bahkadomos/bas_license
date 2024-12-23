@@ -18,11 +18,16 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Get previous tag
+        id: last_tag
+        uses: actions-ecosystem/action-get-latest-tag@v1
+
       - name: Filter paths
         id: changes
         uses: dorny/paths-filter@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          base: ${{ steps.last_tag.outputs.tag }}
           filters: |
             docker:
               - '/alembic/**'
