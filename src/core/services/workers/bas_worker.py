@@ -31,7 +31,6 @@ class IBasWorker(Protocol):
 
 
 class BasWorker:
-    KEY: str
     ENV_SESSION = "BAS_SESSION"
 
     def __init__(
