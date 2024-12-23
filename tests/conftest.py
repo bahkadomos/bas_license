@@ -64,6 +64,20 @@ class AiohttpClient(RetryAiohttpClient):
         self._client._client.session.cookie_jar.update_cookies(cookies)
 
 
+def pytest_configure(config: pytest.Config):
+    config.addinivalue_line(
+        "markers", "use_set_session: mark test to use set_session fixture"
+    )
+
+
+def pytest_collection_modifyitems(
+    session: pytest.Session, config: pytest.Config, items: list[pytest.Item]
+):
+    for item in items:
+        if "use_set_session" in item.keywords:
+            item.fixturenames.append("set_session")
+
+
 @pytest.fixture(autouse=True)
 def mock_urls(mocker: MockerFixture) -> None:
     objects = [
@@ -153,6 +167,18 @@ async def app(dsn: str, logger: Logger) -> AsyncGenerator[FastAPI, None]:
     await drop_sqlalchemy_tables(app.state.engine)
     await app.state.engine.dispose()
     app.dependency_overrides.clear()
+
+
+@pytest.fixture(scope="module")
+async def set_session(uow: IUnitOfWork):
+    async with uow:
+        await uow.sessions.create_one(f"session={App.SESSION}")
+        await uow.commit()
+
+    async with uow:
+        session = await uow.sessions.read_one()
+        await uow.commit()
+    assert session == f"session={App.SESSION}"
 
 
 @pytest.fixture(scope="module")

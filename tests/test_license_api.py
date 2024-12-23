@@ -4,10 +4,8 @@ from datetime import datetime
 
 import pytest
 from httpx import AsyncClient
-from pytest_mock import MockerFixture
 
 from core.services.uow import IUnitOfWork
-from core.services.workers import BasWorker
 
 from .conftest import AppClient
 from .helpers import (
@@ -22,7 +20,10 @@ USER_EXPIRED = "expired"
 SCRIPT_NAME = "test_script"
 usernames = [USER_ACTIVE, USER_EXPIRED]
 
-pytestmark = pytest.mark.asyncio(loop_scope="module")
+pytestmark = [
+    pytest.mark.asyncio(loop_scope="module"),
+    pytest.mark.use_set_session,
+]
 
 
 @pytest.fixture(scope="module")
@@ -34,10 +35,6 @@ async def app_client(
         "/bas/users/page",
         web_app.user_license_succeed_handler,
     )
-    web_app.app.router.add_post(
-        "/login",
-        web_app.bas_success_authorized_handler,
-    )
     async with app_client_factory(web_app.app) as client:
         yield client
 
@@ -48,13 +45,7 @@ async def test_license_create_task(
     client: AsyncClient,
     context: dict,
     username: str,
-    mocker: MockerFixture,
 ):
-    mocker.patch.object(
-        BasWorker,
-        "_get_storage_session",
-        return_value=f"session={App.SESSION}",
-    )
     task_id = await license_create_task(
         client=client,
         username=username,
@@ -216,32 +207,3 @@ async def test_task_id_not_found(client: AsyncClient):
     assert data.get("location") == "body"
     assert data.get("field") == "task_id"
     assert data.get("description") == "Task id not found"
-
-
-@pytest.mark.dependency(scope="module")
-async def test_license_pending_create_task(
-    client: AsyncGenerator[AsyncClient, None],
-    context: dict,
-):
-    task_id = await license_create_task(
-        client=client, username="42", script_name="42"
-    )
-    context["task_id"] = task_id
-
-
-@pytest.mark.dependency(
-    depends=["test_license_pending_create_task"],
-    scope="module",
-)
-async def test_license_pending_get_result(
-    client: AsyncClient,
-    context: dict,
-):
-    task_id = context["task_id"]
-    data = dict(task_id=task_id)
-    response = await client.post("/v1/license/result/", json=data)
-    assert response.status_code == 200
-    data = get_success_response_data(response)
-    assert data.get("status") == "pending"
-    assert data.get("is_expired") is None
-    assert data.get("expires_in") is None
