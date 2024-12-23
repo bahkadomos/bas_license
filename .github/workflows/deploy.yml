@@ -4,7 +4,6 @@ on:
   release:
     types:
       - published
-  workflow_dispatch:
 
 jobs:
   deploy:
@@ -18,30 +17,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Get previous tag
-        id: last_tag
-        uses: actions-ecosystem/action-get-latest-tag@v1
-
-      - name: Filter paths
-        id: changes
-        uses: dorny/paths-filter@v3
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          base: ${{ steps.last_tag.outputs.tag }}
-          filters: |
-            docker:
-              - '/alembic/**'
-              - '/monitoring/**'
-              - '/src/**'
-              - 'alembic.ini'
-              - 'docker-compose.yml'
-              - 'pyproject.toml'
-              - 'requirements.txt'
-              - 'Dockerfile'
-              - 'Makefile'
-
       - name: Create .env
-        if: steps.changes.outputs.docker == 'true'
         uses: SpicyPizza/create-envfile@v2.0
         with:
           envkey_DEBUG: false
@@ -61,11 +37,9 @@ jobs:
           fail_on_empty: true
 
       - name: Setup docker
-        if: steps.changes.outputs.docker == 'true'
         uses: docker/setup-buildx-action@v3
 
       - name: Build and start containers
-        if: steps.changes.outputs.docker == 'true'
         run: |
           docker compose down
           docker compose up --build -d
