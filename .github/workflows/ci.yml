@@ -10,6 +10,7 @@ on:
       - "Makefile"
     tags-ignore:
       - '**'
+  workflow_dispatch:
 
 env:
   DEBUG: false
