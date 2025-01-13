@@ -17,7 +17,7 @@ class ServerInfoSchema(BaseModel):
         if "request_id" not in data:
             data["request_id"] = uuid.uuid4()
         if "created_at" not in data:
-            data["created_at"] = int(time() / 1000)
+            data["created_at"] = int(time() * 1000)
         return data
 
 
