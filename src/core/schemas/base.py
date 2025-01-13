@@ -1,5 +1,5 @@
+from time import time
 import uuid
-from datetime import datetime
 from typing import Annotated, Any
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
@@ -9,7 +9,7 @@ from core._types import UUIDv4
 
 class ServerInfoSchema(BaseModel):
     request_id: UUIDv4
-    created_at: datetime
+    created_at: int
 
     @model_validator(mode="before")
     @classmethod
@@ -17,7 +17,7 @@ class ServerInfoSchema(BaseModel):
         if "request_id" not in data:
             data["request_id"] = uuid.uuid4()
         if "created_at" not in data:
-            data["created_at"] = datetime.now()
+            data["created_at"] = int(time() / 1000)
         return data
 
 
