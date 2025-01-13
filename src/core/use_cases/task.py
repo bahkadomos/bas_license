@@ -70,7 +70,6 @@ class TaskUseCase:
         return TaskLicenseResultOutSchema(
             status=creds.status,
             credentials=LicenseDetailsSchema(
-                is_expired=creds.is_expired,
-                expires_in=creds.expires_in
+                is_expired=creds.is_expired, expires_in=creds.expires_in
             ),
         )
